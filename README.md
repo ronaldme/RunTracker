@@ -2,6 +2,8 @@
 
 A self-hosted fitness tracking and analysis platform with Strava integration. Import your activities, explore your running routes on an interactive map, track street coverage, plan workouts, and earn achievement badges. Inspired by ideas from various fitness and running apps. This project is intended for personal use only.
 
+> **Note:** This application was almost entirely developed using AI-assisted spec-driven development, using [Claude Code](https://claude.ai/code) as the primary development tool.
+
 ---
 
 ## Features
