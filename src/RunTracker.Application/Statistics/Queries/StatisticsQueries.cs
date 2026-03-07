@@ -202,7 +202,9 @@ public class GetAllTimeStatsQueryHandler : IRequestHandler<GetAllTimeStatsQuery,
         RecordType.MostElevation   => $"{value:F0} m",
         RecordType.BestRunCadence  => $"{value:F0} spm",
         RecordType.BestRideCadence => $"{value:F0} rpm",
-        _                          => TimeSpan.FromSeconds(value).ToString(@"m\:ss\.f"),
+        _                          => value >= 3600
+                                       ? TimeSpan.FromSeconds(value).ToString(@"h\:mm\:ss\.f")
+                                       : TimeSpan.FromSeconds(value).ToString(@"m\:ss\.f"),
     };
 }
 
@@ -293,7 +295,9 @@ public class GetPersonalRecordsQueryHandler : IRequestHandler<GetPersonalRecords
         RecordType.MostElevation   => $"{value:F0} m",
         RecordType.BestRunCadence  => $"{value:F0} spm",
         RecordType.BestRideCadence => $"{value:F0} rpm",
-        _                          => TimeSpan.FromSeconds(value).ToString(@"m\:ss\.f"),
+        _                          => value >= 3600
+                                       ? TimeSpan.FromSeconds(value).ToString(@"h\:mm\:ss\.f")
+                                       : TimeSpan.FromSeconds(value).ToString(@"m\:ss\.f"),
     };
 }
 

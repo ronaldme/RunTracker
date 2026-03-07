@@ -1072,19 +1072,13 @@ export default function TrainingPage() {
                               </button>
                             );
                           })}
-                          {hiddenCount > 0 ? (
+                          {hiddenCount > 0 && (
                             <button
                               onClick={(e) => { e.stopPropagation(); setDayDetail(dateStr); }}
                               className="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 w-full text-left px-1 font-medium leading-5"
                             >
                               +{hiddenCount} more
                             </button>
-                          ) : (
-                            <button
-                              className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 mt-0.5 w-full text-left opacity-0 group-hover:opacity-100 transition-opacity"
-                              onClick={(e) => { e.stopPropagation(); setAbsenceDialogDate(dateStr); }}
-                              title="Mark absence"
-                            >+ absence</button>
                           )}
                         </div>
                       );

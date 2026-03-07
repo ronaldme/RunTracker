@@ -426,8 +426,13 @@ export default function DashboardPage() {
                 </div>
                 <button
                   onClick={async () => {
-                    const { data } = await authApi.getStravaConnectUrl();
-                    window.location.href = data.url;
+                    try {
+                      const { data } = await authApi.getStravaConnectUrl();
+                      window.location.href = data.url;
+                    } catch (err: any) {
+                      const msg = err?.response?.data?.error ?? 'Could not connect to Strava. Please try again.';
+                      alert(msg);
+                    }
                   }}
                   className="mt-auto inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-orange-500 hover:bg-orange-600 shadow-sm transition-colors"
                 >
@@ -469,7 +474,7 @@ export default function DashboardPage() {
               <StatCard title={activityCountLabel} value={String(allTimeStats?.totalRuns ?? 0)} icon={activityCountIcon} />
               <StatCard title="Total Time" value={formatDuration(allTimeStats?.totalTimeSeconds ?? 0)} icon="⏱️" />
               <StatCard title="Elevation Gain" value={formatElevation(allTimeStats?.totalElevationGain ?? 0)} icon="⛰️" />
-              {nextRace && (() => {
+              {nextRace ? (() => {
                 const daysUntil = Math.max(0, Math.ceil((new Date(nextRace.date).getTime() - Date.now()) / 86400000));
                 return (
                   <Link to="/races" className="block">
@@ -481,7 +486,15 @@ export default function DashboardPage() {
                     </div>
                   </Link>
                 );
-              })()}
+              })() : (
+                <Link to="/races" className="block">
+                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700 hover:border-purple-400 dark:hover:border-purple-500 transition-colors">
+                    <p className="text-xs font-medium text-purple-500 dark:text-purple-400 uppercase tracking-wider mb-1">Next Race</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">No race planned</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Add a race to start counting down</p>
+                  </div>
+                </Link>
+              )}
             </>
           ) : (
             <>
@@ -489,7 +502,7 @@ export default function DashboardPage() {
               <StatCard title={activityCountLabel} value={String(yearlyStats?.totalRuns ?? 0)} icon={activityCountIcon} />
               <StatCard title="Total Time" value={formatDuration(yearlyStats?.totalTimeSeconds ?? 0)} icon="⏱️" />
               <StatCard title="Elevation Gain" value={formatElevation(yearlyStats?.totalElevationGain ?? 0)} icon="⛰️" />
-              {nextRace && (() => {
+              {nextRace ? (() => {
                 const daysUntil = Math.max(0, Math.ceil((new Date(nextRace.date).getTime() - Date.now()) / 86400000));
                 return (
                   <Link to="/races" className="block">
@@ -501,24 +514,35 @@ export default function DashboardPage() {
                     </div>
                   </Link>
                 );
-              })()}
+              })() : (
+                <Link to="/races" className="block">
+                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700 hover:border-purple-400 dark:hover:border-purple-500 transition-colors">
+                    <p className="text-xs font-medium text-purple-500 dark:text-purple-400 uppercase tracking-wider mb-1">Next Race</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">No race planned</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Add a race to start counting down</p>
+                  </div>
+                </Link>
+              )}
             </>
           )}
         </div>
       )}
 
-      {/* Streaks */}
-      {show('streaks') && allTimeStats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <StatCard title="Current Streak" value={`${allTimeStats.currentDayStreak} days`} icon="🔥" />
-          <StatCard title="Longest Streak" value={`${allTimeStats.longestDayStreak} days`} icon="🏆" />
-          <StatCard title="Week Streak" value={`${allTimeStats.currentWeekStreak} wks`} icon="📅" />
-          <StatCard title="Best Week Streak" value={`${allTimeStats.longestWeekStreak} wks`} icon="⭐" />
+      {/* Streaks + Goals */}
+      {(show('streaks') || show('goals')) && (
+        <div className="flex gap-4 mb-6 items-stretch">
+          {show('streaks') && allTimeStats && (
+            <div className="flex-shrink-0 flex">
+              <StatCard title="Week Streak" value={`${allTimeStats.currentWeekStreak} wks`} icon="📅" className="flex flex-col justify-center" />
+            </div>
+          )}
+          {show('goals') && (
+            <div className="flex-1 min-w-0">
+              <GoalsWidget />
+            </div>
+          )}
         </div>
       )}
-
-      {/* Goals */}
-      {show('goals') && <GoalsWidget />}
 
       {/* Upcoming training */}
       {show('upcoming_training') && upcomingWorkouts && upcomingWorkouts.length > 0 && (

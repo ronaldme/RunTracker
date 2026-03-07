@@ -48,6 +48,7 @@ export default function RaceHistoryPage() {
 
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<{ id: string; title: string } | null>(null);
   const [form, setForm] = useState({
     title: '',
     date: new Date().toISOString().slice(0, 10),
@@ -148,8 +149,8 @@ export default function RaceHistoryPage() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('Delete this race?')) return;
     await deleteRace.mutateAsync(id);
+    setConfirmDelete(null);
   }
 
   return (
@@ -277,7 +278,7 @@ export default function RaceHistoryPage() {
                       <Link to={`/activities/${race.linkedActivityId}`} className="text-xs text-primary-600 dark:text-primary-400 hover:underline">Activity →</Link>
                     )}
                     <button onClick={() => openEdit(race)} className="text-xs text-blue-600 dark:text-blue-400 hover:underline">Edit</button>
-                    <button onClick={() => handleDelete(race.id)} className="text-xs text-red-500 hover:underline">Delete</button>
+                    <button onClick={() => setConfirmDelete({ id: race.id, title: race.title })} className="text-xs text-red-500 hover:underline">Delete</button>
                   </div>
                 </div>
               );
@@ -341,7 +342,7 @@ export default function RaceHistoryPage() {
                         <Link to={`/activities/${race.linkedActivityId}`} className="text-xs text-primary-600 dark:text-primary-400 hover:underline">Activity →</Link>
                       )}
                       <button onClick={() => openEdit(race)} className="text-xs text-blue-600 dark:text-blue-400 hover:underline">Edit</button>
-                      <button onClick={() => handleDelete(race.id)} className="text-xs text-red-500 hover:underline">Delete</button>
+                      <button onClick={() => setConfirmDelete({ id: race.id, title: race.title })} className="text-xs text-red-500 hover:underline">Delete</button>
                     </div>
                   </div>
                   {race.notes && <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 border-t border-gray-100 dark:border-gray-700 pt-2">{race.notes}</p>}
@@ -362,6 +363,43 @@ export default function RaceHistoryPage() {
       <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800">
         <Link to="/training" className="text-sm text-primary-600 hover:text-primary-800">← Back to Training Calendar</Link>
       </div>
+
+      {/* Delete confirm dialog */}
+      {confirmDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 w-full max-w-sm p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 dark:text-white">Delete race</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">This action cannot be undone.</p>
+              </div>
+            </div>
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-6">
+              Are you sure you want to delete <span className="font-semibold">"{confirmDelete.title}"</span>?
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDelete(confirmDelete.id)}
+                disabled={deleteRace.isPending}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg disabled:opacity-50"
+              >
+                {deleteRace.isPending ? 'Deleting…' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

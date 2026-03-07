@@ -98,8 +98,9 @@ public class StravaSyncBackgroundService : BackgroundService
     }
 
     /// <summary>
-    /// Cursor-based historical sync. Fetches all activities from Strava, oldest to newest (paged newest-first
-    /// using a 'before' cursor). Saves progress after each page so it can resume after a restart or rate limit hit.
+    /// Historical sync: collects all activity summaries from Strava (newest-first, page by page),
+    /// then processes them oldest-first so badges and records are assigned to the earliest run.
+    /// On restart after a rate limit, already-synced activities are skipped via the DB.
     /// </summary>
     public async Task SyncHistoricalActivitiesAsync(string userId, CancellationToken ct)
     {
@@ -128,112 +129,97 @@ public class StravaSyncBackgroundService : BackgroundService
                 return;
             }
 
-            _logger.LogInformation("Starting historical sync for user {UserId} (cursor: {Cursor})", userId, user.StravaHistoricalSyncCursor);
+            _logger.LogInformation("Starting historical sync for user {UserId} — collecting all activity summaries...", userId);
 
-            int totalSynced = 0;
-            int totalSkipped = 0;
-            const int perPage = 100;
+            // ── Phase 1: Collect all summaries (Strava returns newest-first) ─────────
+            const int perPage = 200; // Strava max per page
+            var allSummaries = new List<StravaActivitySummary>();
+            int page = 1;
 
-            while (!user.StravaHistoricalSyncComplete)
+            while (true)
             {
                 ct.ThrowIfCancellationRequested();
-
-                // Build the 'before' timestamp from our cursor (null = no filter, gets most recent)
-                long? before = user.StravaHistoricalSyncCursor.HasValue
-                    ? new DateTimeOffset(user.StravaHistoricalSyncCursor.Value, TimeSpan.Zero).ToUnixTimeSeconds()
-                    : null;
 
                 List<StravaActivitySummary> batch;
                 try
                 {
                     var accessToken = await EnsureValidToken(user, stravaService, userManager, ct);
-                    var activities = await stravaService.GetAthleteActivitiesAsync(accessToken, before: before, perPage: perPage, ct: ct);
+                    var activities = await stravaService.GetAthleteActivitiesAsync(accessToken, page: page, perPage: perPage, ct: ct);
                     batch = activities.ToList();
                 }
                 catch (StravaRateLimitException ex)
                 {
-                    _logger.LogWarning("Rate limited fetching page for user {UserId} ({Limit}). Will resume from cursor {Cursor}",
-                        userId, ex.IsDailyLimit ? "daily" : "15-min", user.StravaHistoricalSyncCursor);
-                    return;
+                    _logger.LogWarning("Rate limited collecting summaries page {Page} for user {UserId} ({Limit}). Will retry on next sync.",
+                        page, userId, ex.IsDailyLimit ? "daily" : "15-min");
+                    return; // No state lost — will restart from page 1 next time
                 }
 
-                _logger.LogInformation("Historical sync page: {Count} activities (before {Before}) for user {UserId}", batch.Count, before, userId);
+                _logger.LogInformation("Collected page {Page}: {Count} summaries for user {UserId}", page, batch.Count, userId);
 
-                if (batch.Count == 0)
-                {
-                    user.StravaHistoricalSyncComplete = true;
-                    await userManager.UpdateAsync(user);
-                    _logger.LogInformation("Historical sync complete for user {UserId}: {Total} synced, {Skipped} already existed", userId, totalSynced, totalSkipped);
-                    await badgeService.CheckAndAwardBadgesAsync(userId, ct);
-                    return;
-                }
+                if (batch.Count == 0) break;
+                allSummaries.AddRange(batch);
+                if (batch.Count < perPage) break; // Last page reached
 
-                // ── Advance the cursor BEFORE syncing individual activities ──────────────
-                // Saving the cursor here means a mid-batch rate-limit or restart won't
-                // re-fetch this same Strava page. Activities in this batch that didn't
-                // get processed are caught by the already-in-DB check below on next run.
-                var oldestInBatch = batch.Min(a => a.StartDate);
-                user.StravaHistoricalSyncCursor = oldestInBatch.AddSeconds(-1);
-
-                // Track the newest activity we've seen (first batch = most recent)
-                var newestInBatch = batch.Max(a => a.StartDate);
-                if (newestInBatch > (user.StravaNewestSyncedAt ?? DateTime.MinValue))
-                    user.StravaNewestSyncedAt = newestInBatch;
-
-                await userManager.UpdateAsync(user); // persist cursor now
-
-                // ── Skip activities already in DB to preserve rate-limit budget ─────────
-                var batchExternalIds = batch.Select(a => (long?)a.Id).ToList();
-                var alreadySyncedIds = (await db.Activities
-                    .Where(a => a.UserId == userId && a.ExternalId != null && batchExternalIds.Contains(a.ExternalId))
-                    .Select(a => a.ExternalId!.Value)
-                    .ToListAsync(ct))
-                    .ToHashSet();
-
-                // Process oldest-first within each page so "first discovery" timestamps
-                // (streets, tiles, UserStreetNodes) are assigned to the chronologically
-                // earliest run that visited a location, not the most-recently fetched one.
-                var orderedBatch = batch.OrderBy(a => a.StartDate).ToList();
-
-                foreach (var summary in orderedBatch)
-                {
-                    if (alreadySyncedIds.Contains(summary.Id))
-                    {
-                        totalSkipped++;
-                        continue; // already in DB — no API call needed
-                    }
-
-                    try
-                    {
-                        var accessToken = await EnsureValidToken(user, stravaService, userManager, ct);
-                        await SyncActivityAsync(db, stravaService, prService, vo2maxSnapshotService, streetMatchingService, tileService, badgeService, user, accessToken, summary.Id, ct, checkBadges: false);
-                        totalSynced++;
-                    }
-                    catch (StravaRateLimitException ex)
-                    {
-                        _logger.LogWarning("Rate limited syncing activity {ActivityId} for user {UserId} ({Limit}). Cursor already saved at {Cursor}.",
-                            summary.Id, userId, ex.IsDailyLimit ? "daily" : "15-min", user.StravaHistoricalSyncCursor);
-                        return; // cursor was persisted above — safe to stop
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Failed to sync activity {ActivityId} for user {UserId}", summary.Id, userId);
-                    }
-                }
-
-                // If we got fewer than a full page we've reached the oldest activity
-                if (batch.Count < perPage)
-                {
-                    user.StravaHistoricalSyncComplete = true;
-                    await userManager.UpdateAsync(user);
-                    _logger.LogInformation("Historical sync complete for user {UserId}: {Total} synced, {Skipped} already existed", userId, totalSynced, totalSkipped);
-                    await badgeService.CheckAndAwardBadgesAsync(userId, ct);
-                    return;
-                }
-
-                // Respect Strava rate limits between pages
-                await Task.Delay(1000, ct);
+                page++;
+                await Task.Delay(500, ct); // Small delay between page requests
             }
+
+            _logger.LogInformation("Collected {Total} activity summaries for user {UserId}. Processing oldest-first...", allSummaries.Count, userId);
+
+            // ── Phase 2: Process oldest-first ────────────────────────────────────────
+            // Sorting oldest-first ensures badges, PRs, and street/tile "first discovery"
+            // are always attributed to the chronologically earliest run.
+            allSummaries.Sort((a, b) => a.StartDate.CompareTo(b.StartDate));
+
+            // Load all already-synced external IDs for this user so we can skip them
+            // (allows safe resume after a mid-sync rate limit or restart).
+            var alreadySyncedIds = (await db.Activities
+                .Where(a => a.UserId == userId && a.ExternalId != null)
+                .Select(a => a.ExternalId!.Value)
+                .ToListAsync(ct))
+                .ToHashSet();
+
+            int totalSynced = 0;
+            int totalSkipped = 0;
+
+            foreach (var summary in allSummaries)
+            {
+                if (alreadySyncedIds.Contains(summary.Id))
+                {
+                    totalSkipped++;
+                    continue; // Already in DB — no API call needed
+                }
+
+                ct.ThrowIfCancellationRequested();
+
+                try
+                {
+                    var accessToken = await EnsureValidToken(user, stravaService, userManager, ct);
+                    await SyncActivityAsync(db, stravaService, prService, vo2maxSnapshotService, streetMatchingService, tileService, badgeService, user, accessToken, summary.Id, ct, checkBadges: false);
+                    totalSynced++;
+
+                    if (summary.StartDate > (user.StravaNewestSyncedAt ?? DateTime.MinValue))
+                    {
+                        user.StravaNewestSyncedAt = summary.StartDate;
+                        await userManager.UpdateAsync(user);
+                    }
+                }
+                catch (StravaRateLimitException ex)
+                {
+                    _logger.LogWarning("Rate limited syncing activity {ActivityId} for user {UserId} ({Limit}). Progress saved in DB — will resume on next sync.",
+                        summary.Id, userId, ex.IsDailyLimit ? "daily" : "15-min");
+                    return; // Already-synced DB check handles resumption
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to sync activity {ActivityId} for user {UserId}", summary.Id, userId);
+                }
+            }
+
+            user.StravaHistoricalSyncComplete = true;
+            await userManager.UpdateAsync(user);
+            _logger.LogInformation("Historical sync complete for user {UserId}: {Total} synced, {Skipped} already existed", userId, totalSynced, totalSkipped);
+            await badgeService.CheckAndAwardBadgesAsync(userId, ct);
         }
         catch (OperationCanceledException)
         {

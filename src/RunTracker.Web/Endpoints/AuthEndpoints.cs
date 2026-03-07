@@ -103,19 +103,28 @@ public static class AuthEndpoints
                     return Results.BadRequest(new { Errors = usernameResult.Errors.Select(e => e.Description) });
             }
 
-            appUser.DisplayName = request.DisplayName;
-            appUser.Bio = request.Bio;
-            appUser.WeightKg = request.WeightKg;
-            appUser.HeightCm = request.HeightCm;
-            appUser.MaxHeartRate = request.MaxHeartRate;
-            appUser.RestingHeartRate = request.RestingHeartRate;
+            if (request.DisplayName != null)
+                appUser.DisplayName = request.DisplayName;
+            if (request.Bio != null)
+                appUser.Bio = request.Bio;
+            if (request.WeightKg.HasValue)
+                appUser.WeightKg = request.WeightKg;
+            if (request.HeightCm.HasValue)
+                appUser.HeightCm = request.HeightCm;
+            if (request.MaxHeartRate.HasValue)
+                appUser.MaxHeartRate = request.MaxHeartRate;
+            if (request.RestingHeartRate.HasValue)
+                appUser.RestingHeartRate = request.RestingHeartRate;
             if (request.HrZoneAlgorithm.HasValue)
                 appUser.HrZoneAlgorithm = request.HrZoneAlgorithm.Value;
             if (request.Gender.HasValue)
                 appUser.Gender = request.Gender.Value;
-            appUser.BirthYear = request.BirthYear;
-            appUser.BirthMonth = request.BirthMonth;
-            appUser.BirthDay = request.BirthDay;
+            if (request.BirthYear.HasValue)
+                appUser.BirthYear = request.BirthYear;
+            if (request.BirthMonth.HasValue)
+                appUser.BirthMonth = request.BirthMonth;
+            if (request.BirthDay.HasValue)
+                appUser.BirthDay = request.BirthDay;
             if (request.DashboardConfig != null)
                 appUser.DashboardConfig = request.DashboardConfig;
             if (request.CustomHrZones != null)
@@ -198,6 +207,10 @@ public static class AuthEndpoints
             var clientId = !string.IsNullOrWhiteSpace(dbSettings?.StravaClientId)
                 ? dbSettings.StravaClientId
                 : config["Strava:ClientId"];
+
+            if (string.IsNullOrWhiteSpace(clientId))
+                return Results.BadRequest(new { error = "Strava API credentials are not configured. Please enter your Strava Client ID and Client Secret in the admin settings before connecting." });
+
             var redirectUri = config["Strava:RedirectUri"] ?? "http://localhost:5122/api/auth/strava/callback";
             var state = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(userId!));
             var url = $"https://www.strava.com/oauth/authorize?client_id={clientId}&response_type=code&redirect_uri={Uri.EscapeDataString(redirectUri)}&scope=read,activity:read_all&approval_prompt=auto&state={Uri.EscapeDataString(state)}";

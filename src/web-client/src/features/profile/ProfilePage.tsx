@@ -307,6 +307,7 @@ export default function ProfilePage() {
 
   // Strava credentials edit state (F1)
   const [credOpen, setCredOpen] = useState(false);
+  const [sportTypesDialogOpen, setSportTypesDialogOpen] = useState(false);
   const [credClientId, setCredClientId] = useState('');
   const [credSecret, setCredSecret] = useState('');
   const [credSaving, setCredSaving] = useState(false);
@@ -372,8 +373,13 @@ export default function ProfilePage() {
           </div>
           <button
             onClick={async () => {
-              const { data } = await authApi.getStravaConnectUrl();
-              window.location.href = data.url;
+              try {
+                const { data } = await authApi.getStravaConnectUrl();
+                window.location.href = data.url;
+              } catch (err: any) {
+                const msg = err?.response?.data?.error ?? 'Could not connect to Strava. Please try again.';
+                alert(msg);
+              }
             }}
             className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-white bg-orange-500 hover:bg-orange-600 shadow-sm transition-colors"
           >
@@ -464,14 +470,26 @@ export default function ProfilePage() {
 
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Account Information</h2>
-          {!editing && (
+          <div className="flex items-center gap-3">
             <button
-              onClick={startEdit}
-              className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+              onClick={() => setSportTypesDialogOpen(true)}
+              title="Configure visible activity types"
+              className="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
-              Edit profile
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
             </button>
-          )}
+            {!editing && (
+              <button
+                onClick={startEdit}
+                className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+              >
+                Edit profile
+              </button>
+            )}
+          </div>
         </div>
 
         {editing ? (
@@ -715,23 +733,23 @@ export default function ProfilePage() {
             {profile?.userName && (
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-gray-600 dark:text-gray-400">Username</span>
-                <span className="font-medium dark:text-white">@{profile.userName}</span>
+                <span className="font-medium text-gray-900 dark:text-white">@{profile.userName}</span>
               </div>
             )}
             {profile?.displayName && (
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-gray-600 dark:text-gray-400">Name</span>
-                <span className="font-medium">{profile.displayName}</span>
+                <span className="font-medium text-gray-900 dark:text-white">{profile.displayName}</span>
               </div>
             )}
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-gray-600 dark:text-gray-400">Email</span>
-              <span className="font-medium dark:text-white break-all">{user?.email}</span>
+              <span className="font-medium text-gray-900 dark:text-white break-all">{user?.email}</span>
             </div>
             {profile?.bio && (
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <span className="text-gray-600 dark:text-gray-400">Bio</span>
-                <span className="font-medium text-right max-w-xs">{profile.bio}</span>
+                <span className="font-medium text-right max-w-xs text-gray-900 dark:text-white">{profile.bio}</span>
               </div>
             )}
             {(profile?.weightKg || profile?.heightCm) && (
@@ -739,40 +757,39 @@ export default function ProfilePage() {
                 {profile.weightKg && (
                   <div>
                     <p className="text-xs text-gray-400 dark:text-gray-500">Weight</p>
-                    <p className="text-sm font-medium">{profile.weightKg} kg</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">{profile.weightKg} kg</p>
                   </div>
                 )}
                 {profile.heightCm && (
                   <div>
                     <p className="text-xs text-gray-400 dark:text-gray-500">Height</p>
-                    <p className="text-sm font-medium">{profile.heightCm} cm</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">{profile.heightCm} cm</p>
                   </div>
                 )}
                 {bmi && (
                   <div>
                     <p className="text-xs text-gray-400 dark:text-gray-500">BMI</p>
-                    <p className="text-sm font-medium">{bmi}</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">{bmi}</p>
                   </div>
                 )}
                 {profile.maxHeartRate && (
                   <div>
                     <p className="text-xs text-gray-400 dark:text-gray-500">Max HR</p>
-                    <p className="text-sm font-medium">{profile.maxHeartRate} bpm</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">{profile.maxHeartRate} bpm</p>
                   </div>
                 )}
                 {profile.restingHeartRate && (
                   <div>
                     <p className="text-xs text-gray-400 dark:text-gray-500">Resting HR</p>
-                    <p className="text-sm font-medium">{profile.restingHeartRate} bpm</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">{profile.restingHeartRate} bpm</p>
                   </div>
                 )}
                 {profile.birthYear && (
                   <div>
                     <p className="text-xs text-gray-400 dark:text-gray-500">Birth Date</p>
-                    <p className="text-sm font-medium">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
                       {profile.birthMonth && profile.birthDay
-                        ? new Date(profile.birthYear, profile.birthMonth - 1, profile.birthDay)
-                            .toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' })
+                        ? `${profile.birthDay} ${new Date(profile.birthYear, profile.birthMonth - 1, profile.birthDay).toLocaleDateString('en-GB', { month: 'long' })} ${profile.birthYear}`
                         : profile.birthYear}
                     </p>
                   </div>
@@ -847,8 +864,13 @@ export default function ProfilePage() {
                 ) : (
                   <button
                     onClick={async () => {
-                      const { data } = await authApi.getStravaConnectUrl();
-                      window.location.href = data.url;
+                      try {
+                        const { data } = await authApi.getStravaConnectUrl();
+                        window.location.href = data.url;
+                      } catch (err: any) {
+                        const msg = err?.response?.data?.error ?? 'Could not connect to Strava. Please try again.';
+                        alert(msg);
+                      }
                     }}
                     className="inline-flex items-center px-4 py-2 rounded-md text-sm font-medium text-white bg-orange-500 hover:opacity-90"
                   >
@@ -936,38 +958,6 @@ export default function ProfilePage() {
         )}
       </div>
 
-      {/* Activity Type Visibility (F8) */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-100 dark:border-gray-700 p-6 mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Visible Activity Types</h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Unchecked types are hidden from activity lists, statistics, and charts.</p>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-          {(Object.values(SportType).filter((v) => typeof v === 'number') as SportType[]).map((st) => {
-            const hidden: number[] = (() => {
-              try { return JSON.parse(profile?.hiddenSportTypes ?? '[]') as number[]; }
-              catch { return []; }
-            })();
-            const isVisible = !hidden.includes(st as number);
-            return (
-              <label key={st} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={isVisible}
-                  onChange={async () => {
-                    const next = isVisible
-                      ? [...hidden, st as number]
-                      : hidden.filter((h) => h !== (st as number));
-                    await authApi.updateProfile({ hiddenSportTypes: JSON.stringify(next) });
-                    await queryClient.invalidateQueries({ queryKey: ['profile'] });
-                  }}
-                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                />
-                {sportTypeName(st as number)}
-              </label>
-            );
-          })}
-        </div>
-      </div>
-
       {/* Badges */}
       {badges && badges.length > 0 && (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-100 dark:border-gray-700 p-6 mb-8">
@@ -998,12 +988,15 @@ export default function ProfilePage() {
             <StatCard title="Total Time" value={formatDuration(stats.totalTimeSeconds)} icon="⏱️" />
             <StatCard title="Avg Pace" value={`${formatPace(stats.averagePaceMinPerKm)} /km`} icon="⚡" />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <StatCard title="Current Streak" value={`${stats.currentDayStreak} days`} icon="🔥" />
+            <StatCard title="Longest Streak" value={`${stats.longestDayStreak} days`} icon="🏆" />
             <StatCard
               title="Week Streak"
               value={`${weekStreak} ${weekStreak === 1 ? 'week' : 'weeks'}`}
-              icon="🔥"
+              icon="📅"
             />
+            <StatCard title="Best Week Streak" value={`${stats.longestWeekStreak} wks`} icon="⭐" />
           </div>
           {stats.firstRunDate && (
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
@@ -1021,7 +1014,7 @@ export default function ProfilePage() {
       <RunningLevelCard />
 
       {/* Personal Records */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-100 dark:border-gray-700 p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-100 dark:border-gray-700 p-6 mb-8">
         <div className="mb-4">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Running Personal Records</h2>
           <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Road &amp; trail runs only</p>
@@ -1037,6 +1030,64 @@ export default function ProfilePage() {
 
       {/* Weight Log */}
       <WeightLogSection goalWeightKg={profile?.goalWeightKg} />
+
+      {/* Visible Activity Types dialog */}
+      {sportTypesDialogOpen && (() => {
+        const hidden: number[] = (() => {
+          try { return JSON.parse(profile?.hiddenSportTypes ?? '[]') as number[]; }
+          catch { return []; }
+        })();
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 w-full max-w-md">
+              <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-gray-700">
+                <h3 className="text-base font-semibold text-gray-900 dark:text-white">Visible Activity Types</h3>
+                <button
+                  onClick={() => setSportTypesDialogOpen(false)}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="p-5">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Unchecked types are hidden from activity lists, statistics, and charts.</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {(Object.values(SportType).filter((v) => typeof v === 'number') as SportType[]).map((st) => {
+                    const isVisible = !hidden.includes(st as number);
+                    return (
+                      <label key={st} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer py-1">
+                        <input
+                          type="checkbox"
+                          checked={isVisible}
+                          onChange={async () => {
+                            const next = isVisible
+                              ? [...hidden, st as number]
+                              : hidden.filter((h) => h !== (st as number));
+                            await authApi.updateProfile({ hiddenSportTypes: JSON.stringify(next) });
+                            await queryClient.invalidateQueries({ queryKey: ['profile'] });
+                          }}
+                          className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                        />
+                        {sportTypeName(st as number)}
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="flex justify-end p-4 border-t border-gray-100 dark:border-gray-700">
+                <button
+                  onClick={() => setSportTypesDialogOpen(false)}
+                  className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700"
+                >
+                  Done
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Strava sync details dialog */}
       {syncDialogOpen && (

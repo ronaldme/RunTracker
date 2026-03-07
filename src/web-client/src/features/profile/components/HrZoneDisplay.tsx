@@ -2,11 +2,11 @@ import type { HrZone } from '../../../types';
 import { HrZoneAlgorithm } from '../../../types';
 
 const ZONE_COLORS = [
-  { bg: 'bg-sky-200 dark:bg-sky-900', bar: 'bg-sky-400', text: 'text-sky-700 dark:text-sky-300' },
-  { bg: 'bg-green-100 dark:bg-green-900', bar: 'bg-green-500', text: 'text-green-700 dark:text-green-300' },
-  { bg: 'bg-yellow-100 dark:bg-yellow-900', bar: 'bg-yellow-400', text: 'text-yellow-700 dark:text-yellow-300' },
-  { bg: 'bg-orange-100 dark:bg-orange-900', bar: 'bg-orange-500', text: 'text-orange-700 dark:text-orange-300' },
-  { bg: 'bg-red-100 dark:bg-red-900', bar: 'bg-red-500', text: 'text-red-700 dark:text-red-300' },
+  { bg: 'bg-sky-500/10 dark:bg-sky-500/15 border border-sky-500/20', bar: 'bg-sky-400', text: 'text-sky-300' },
+  { bg: 'bg-green-500/10 dark:bg-green-500/15 border border-green-500/20', bar: 'bg-green-400', text: 'text-green-300' },
+  { bg: 'bg-yellow-500/10 dark:bg-yellow-500/15 border border-yellow-500/20', bar: 'bg-yellow-400', text: 'text-yellow-300' },
+  { bg: 'bg-orange-500/10 dark:bg-orange-500/15 border border-orange-500/20', bar: 'bg-orange-400', text: 'text-orange-300' },
+  { bg: 'bg-red-500/10 dark:bg-red-500/15 border border-red-500/20', bar: 'bg-red-400', text: 'text-red-300' },
 ];
 
 const ALGORITHM_NAMES: Record<HrZoneAlgorithm, string> = {
@@ -26,20 +26,24 @@ export default function HrZoneDisplay({ zones, algorithm }: HrZoneDisplayProps) 
   const displayZones = zones.slice(0, 5);
   if (displayZones.length === 0) return null;
 
+  const minBpm = Math.min(...displayZones.map((z) => z.lower));
   const maxBpm = Math.max(...displayZones.map((z) => z.upper));
+  const range = maxBpm - minBpm || 1;
 
   return (
-    <div className="mt-4">
+    <div className="mt-4 max-w-lg">
       <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">
         HR Zones — {ALGORITHM_NAMES[algorithm]}
       </p>
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         {displayZones.map((zone, i) => {
           const colors = ZONE_COLORS[i] ?? ZONE_COLORS[ZONE_COLORS.length - 1];
-          const widthPct = maxBpm > 0 ? (zone.upper / maxBpm) * 100 : 0;
+          // Bar width based on zone range relative to total range, offset from left
+          const leftPct = ((zone.lower - minBpm) / range) * 100;
+          const widthPct = ((zone.upper - zone.lower) / range) * 100;
           return (
             <div key={zone.zone} className={`rounded-lg px-3 py-2 ${colors.bg}`}>
-              <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center justify-between mb-1.5">
                 <span className={`text-xs font-bold ${colors.text}`}>
                   Z{zone.zone} — {zone.label}
                 </span>
@@ -47,10 +51,10 @@ export default function HrZoneDisplay({ zones, algorithm }: HrZoneDisplayProps) 
                   {zone.lower}–{zone.upper} bpm
                 </span>
               </div>
-              <div className="h-1.5 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
+              <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full ${colors.bar}`}
-                  style={{ width: `${widthPct}%` }}
+                  style={{ marginLeft: `${leftPct}%`, width: `${widthPct}%` }}
                 />
               </div>
             </div>
