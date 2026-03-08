@@ -21,13 +21,15 @@ public static class DependencyInjection
     {
         // Database
         services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer(
-                configuration.GetConnectionString("DefaultConnection"),
-                b =>
-                {
-                    b.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName);
-                    b.UseNetTopologySuite();
-                }));
+            options
+                .UseSqlServer(
+                    configuration.GetConnectionString("DefaultConnection"),
+                    b =>
+                    {
+                        b.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName);
+                        b.UseNetTopologySuite();
+                    })
+                .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning)));
 
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<AppDbContext>());
 
