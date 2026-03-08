@@ -91,18 +91,27 @@ public static class ActivityEndpoints
                 .FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId);
             if (activity is null) return Results.NotFound();
 
-            // Get first stream point for coordinates
+            // Get first stream point for coordinates, fall back to polyline
             var firstPoint = await db.ActivityStreams
                 .Where(s => s.ActivityId == id)
                 .OrderBy(s => s.PointIndex)
                 .Select(s => new { s.Latitude, s.Longitude })
                 .FirstOrDefaultAsync();
 
-            if (firstPoint is null)
+            double? lat = firstPoint?.Latitude;
+            double? lng = firstPoint?.Longitude;
+
+            if (lat is null && !string.IsNullOrEmpty(activity.SummaryPolyline))
+            {
+                var pt = DecodeFirstPolylinePoint(activity.SummaryPolyline);
+                if (pt.HasValue) { lat = pt.Value.Lat; lng = pt.Value.Lng; }
+            }
+
+            if (lat is null)
                 return Results.BadRequest(new { error = "No GPS data available for this activity." });
 
             var weather = await weatherService.GetWeatherAsync(
-                firstPoint.Latitude, firstPoint.Longitude, activity.StartDate);
+                lat.Value, lng!.Value, activity.StartDate);
 
             if (weather is null)
                 return Results.BadRequest(new { error = "Weather data unavailable for this location/date." });
@@ -150,5 +159,20 @@ public static class ActivityEndpoints
             var result = await mediator.Send(new GetIntervalAnalysisQuery(userId, id));
             return result is not null ? Results.Ok(result) : Results.NotFound();
         });
+    }
+
+    private static (double Lat, double Lng)? DecodeFirstPolylinePoint(string encoded)
+    {
+        if (string.IsNullOrEmpty(encoded)) return null;
+        int index = 0;
+        static int DecodeChunk(string s, ref int i)
+        {
+            int r = 0, shift = 0, b;
+            do { b = s[i++] - 63; r |= (b & 0x1F) << shift; shift += 5; } while (b >= 0x20);
+            return (r & 1) != 0 ? ~(r >> 1) : r >> 1;
+        }
+        int lat = DecodeChunk(encoded, ref index);
+        int lng = DecodeChunk(encoded, ref index);
+        return (lat / 1e5, lng / 1e5);
     }
 }

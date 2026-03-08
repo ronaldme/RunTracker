@@ -20,7 +20,19 @@ public record BadgeWithStatusDto(
     string Category,
     int SortOrder,
     bool IsEarned,
-    DateTime? EarnedAt);
+    DateTime? EarnedAt,
+    bool IsArchived);
+
+public record BadgeAdminDto(
+    int Id,
+    string Name,
+    string Description,
+    string Icon,
+    string Category,
+    int SortOrder,
+    bool IsArchived);
+
+// ── Regular user queries ────────────────────────────────────────────────────
 
 public record GetAllBadgesQuery(string UserId) : IRequest<List<BadgeWithStatusDto>>;
 
@@ -32,6 +44,7 @@ public class GetAllBadgesQueryHandler : IRequestHandler<GetAllBadgesQuery, List<
     public async Task<List<BadgeWithStatusDto>> Handle(GetAllBadgesQuery request, CancellationToken ct)
     {
         var definitions = await _db.BadgeDefinitions
+            .Where(b => !b.IsArchived)
             .OrderBy(b => b.Category)
             .ThenBy(b => b.SortOrder)
             .ToListAsync(ct);
@@ -48,7 +61,8 @@ public class GetAllBadgesQueryHandler : IRequestHandler<GetAllBadgesQuery, List<
             d.Category,
             d.SortOrder,
             earned.ContainsKey(d.BadgeType),
-            earned.TryGetValue(d.BadgeType, out var dt) ? dt : null
+            earned.TryGetValue(d.BadgeType, out var dt) ? dt : null,
+            d.IsArchived
         )).ToList();
     }
 }
@@ -62,44 +76,32 @@ public class GetUserBadgesQueryHandler : IRequestHandler<GetUserBadgesQuery, Lis
 
     public async Task<List<BadgeDto>> Handle(GetUserBadgesQuery request, CancellationToken ct)
     {
-        var earned = await _db.UserBadges
+        return await _db.UserBadges
             .Where(b => b.UserId == request.UserId)
+            .Join(_db.BadgeDefinitions,
+                ub => ub.BadgeType,
+                bd => bd.BadgeType,
+                (ub, bd) => new BadgeDto(ub.BadgeType, bd.Name, bd.Description, bd.Icon, ub.EarnedAt))
             .OrderBy(b => b.EarnedAt)
             .ToListAsync(ct);
-
-        return earned
-            .Where(b => BadgeMeta.All.ContainsKey(b.BadgeType))
-            .Select(b =>
-            {
-                var (name, desc, icon) = BadgeMeta.All[b.BadgeType];
-                return new BadgeDto(b.BadgeType, name, desc, icon, b.EarnedAt);
-            })
-            .ToList();
     }
 }
 
-internal static class BadgeMeta
+// ── Admin queries ────────────────────────────────────────────────────────────
+
+public record GetAllBadgesAdminQuery : IRequest<List<BadgeAdminDto>>;
+
+public class GetAllBadgesAdminQueryHandler : IRequestHandler<GetAllBadgesAdminQuery, List<BadgeAdminDto>>
 {
-    public static readonly Dictionary<BadgeType, (string Name, string Description, string Icon)> All = new()
+    private readonly IApplicationDbContext _db;
+    public GetAllBadgesAdminQueryHandler(IApplicationDbContext db) => _db = db;
+
+    public async Task<List<BadgeAdminDto>> Handle(GetAllBadgesAdminQuery request, CancellationToken ct)
     {
-        [BadgeType.First5K]       = ("First 5K",        "Completed your first 5km run",              "🏅"),
-        [BadgeType.First10K]      = ("First 10K",       "Completed your first 10km run",             "🥈"),
-        [BadgeType.First21K]      = ("First Half",      "Completed your first half marathon",        "🥇"),
-        [BadgeType.First42K]      = ("First Marathon",  "Completed your first full marathon",        "🏆"),
-        [BadgeType.Total100km]    = ("Century",         "Ran 100km in total",                        "💯"),
-        [BadgeType.Total500km]    = ("500km Club",      "Ran 500km in total",                        "⭐"),
-        [BadgeType.Total1000km]   = ("1000km Club",     "Ran 1,000km in total",                      "🌟"),
-        [BadgeType.Total5000km]   = ("Ultra Runner",    "Ran 5,000km in total",                      "🚀"),
-        [BadgeType.FirstRun]      = ("First Steps",     "Logged your first run",                     "👟"),
-        [BadgeType.Runs10]        = ("10 Runs",         "Completed 10 runs",                         "🔟"),
-        [BadgeType.Runs50]        = ("50 Runs",         "Completed 50 runs",                         "🎯"),
-        [BadgeType.Runs100]       = ("Century Runner",  "Completed 100 runs",                        "💪"),
-        [BadgeType.Runs365]       = ("Full Year",       "Completed 365 runs",                        "📅"),
-        [BadgeType.EverestRun]    = ("Everest",         "Climbed 8,848m elevation in a single run",  "🏔️"),
-        [BadgeType.Tiles100]      = ("Explorer",        "Visited 100 map tiles",                     "🗺️"),
-        [BadgeType.Tiles500]      = ("Adventurer",      "Visited 500 map tiles",                     "🧭"),
-        [BadgeType.Tiles1000]     = ("Cartographer",    "Visited 1,000 map tiles",                   "📍"),
-        [BadgeType.Tiles5000]     = ("World Traveller", "Visited 5,000 map tiles",                   "🌍"),
-        [BadgeType.StreetExplorer]= ("Street Explorer", "Completed 100% of streets in a city",       "🏙️"),
-    };
+        return await _db.BadgeDefinitions
+            .OrderBy(b => b.Category)
+            .ThenBy(b => b.SortOrder)
+            .Select(b => new BadgeAdminDto(b.Id, b.Name, b.Description, b.Icon, b.Category, b.SortOrder, b.IsArchived))
+            .ToListAsync(ct);
+    }
 }

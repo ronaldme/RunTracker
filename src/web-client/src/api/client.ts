@@ -7,6 +7,7 @@ import type {
   AuthResponse,
   ExplorationStats,
   Badge,
+  BadgeAdmin,
   BadgeWithStatus,
   TimeOfDayStats,
   CityDetail,
@@ -277,6 +278,11 @@ export const importApi = {
 export const badgesApi = {
   getAll: () => api.get<Badge[]>('/badges'),
   getAllWithStatus: () => api.get<BadgeWithStatus[]>('/badges/all'),
+  adminGetAll: () => api.get<BadgeAdmin[]>('/admin/badges'),
+  adminArchive: (id: number) => api.put(`/admin/badges/${id}/archive`),
+  adminUnarchive: (id: number) => api.put(`/admin/badges/${id}/unarchive`),
+  adminUpdateSortOrder: (id: number, sortOrder: number) =>
+    api.patch(`/admin/badges/${id}/sort-order`, { sortOrder }),
 };
 
 // Tags

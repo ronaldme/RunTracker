@@ -380,6 +380,10 @@ namespace RunTracker.Infrastructure.Migrations
                     b.Property<int>("SortOrder")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsArchived")
+                        .HasDefaultValue(false)
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BadgeType")

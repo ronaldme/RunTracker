@@ -30,7 +30,7 @@ public class OpenMeteoWeatherService : IWeatherService
         var url = $"https://archive-api.open-meteo.com/v1/archive" +
                   $"?latitude={latitude:F4}&longitude={longitude:F4}" +
                   $"&start_date={dateStr}&end_date={dateStr}" +
-                  "&hourly=temperature_2m,relativehumidity_2m,windspeed_10m,weathercode" +
+                  "&hourly=temperature_2m,relative_humidity_2m,windspeed_10m,weathercode" +
                   "&timezone=UTC";
 
         HttpResponseMessage response;
@@ -52,7 +52,7 @@ public class OpenMeteoWeatherService : IWeatherService
 
         if (!hourly.TryGetProperty("time", out var times)
             || !hourly.TryGetProperty("temperature_2m", out var temps)
-            || !hourly.TryGetProperty("relativehumidity_2m", out var humidity)
+            || !hourly.TryGetProperty("relative_humidity_2m", out var humidity)
             || !hourly.TryGetProperty("windspeed_10m", out var wind)
             || !hourly.TryGetProperty("weathercode", out var codes))
             return null;

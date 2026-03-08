@@ -22,6 +22,7 @@ import TimeOfDayPage from './features/stats/TimeOfDayPage';
 import FitnessPage from './features/fitness/FitnessPage';
 import ActivityComparisonPage from './features/activities/ActivityComparisonPage';
 import BadgesPage from './features/badges/BadgesPage';
+import AdminBadgesPage from './features/badges/AdminBadgesPage';
 import CommunityPage from './features/social/CommunityPage';
 import RouteCreatorPage from './features/map/RouteCreatorPage';
 import GearPage from './features/gear/GearPage';
@@ -80,6 +81,7 @@ export default function App() {
                     <Route path="/profile" element={<ProfilePage />} />
                     <Route path="/report/:year" element={<YearlyReportPage />} />
                     <Route path="/badges" element={<BadgesPage />} />
+                    <Route path="/admin/badges" element={<AdminBadgesPage />} />
                     <Route path="/race-predictor" element={<RacePredictorPage />} />
                     <Route path="/running-level" element={<RunningLevelPage />} />
                     <Route path="/stats/time-of-day" element={<TimeOfDayPage />} />

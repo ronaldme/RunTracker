@@ -176,28 +176,39 @@ public class BadgeService : IBadgeService
             if (a.Distance >= 100000) Award(BadgeType.First100K,    a.Id, a.StartDate);
             if (a.Distance >= 160934) Award(BadgeType.First100Mile, a.Id, a.StartDate);
 
-            if (a.TotalElevationGain >= 4808) Award(BadgeType.MontBlancRun,   a.Id, a.StartDate);
-            if (a.TotalElevationGain >= 5895) Award(BadgeType.KilimanjaroRun, a.Id, a.StartDate);
-            if (a.TotalElevationGain >= 8611) Award(BadgeType.K2Run,          a.Id, a.StartDate);
-            if (a.TotalElevationGain >= 8848) Award(BadgeType.EverestRun,     a.Id, a.StartDate);
+            if (a.TotalElevationGain >= 50)   Award(BadgeType.ElevationSprint50,  a.Id, a.StartDate);
+            if (a.TotalElevationGain >= 100)  Award(BadgeType.ElevationSprint100, a.Id, a.StartDate);
+            if (a.TotalElevationGain >= 4808) Award(BadgeType.MontBlancRun,       a.Id, a.StartDate);
+            if (a.TotalElevationGain >= 5895) Award(BadgeType.KilimanjaroRun,     a.Id, a.StartDate);
+            if (a.TotalElevationGain >= 8611) Award(BadgeType.K2Run,              a.Id, a.StartDate);
+            if (a.TotalElevationGain >= 8848) Award(BadgeType.EverestRun,         a.Id, a.StartDate);
         }
 
         // ---- Cumulative elevation milestones ----
-        if (totalElevationM >= 157)   Award(BadgeType.Cauberg,           null, ElevationTip(157));
-        if (totalElevationM >= 322)   Award(BadgeType.Vaalserberg,       null, ElevationTip(322));
-        if (totalElevationM >= 1912)  Award(BadgeType.MontVentoux,       null, ElevationTip(1912));
-        if (totalElevationM >= 2962)  Award(BadgeType.Zugspitze,         null, ElevationTip(2962));
-        if (totalElevationM >= 3357)  Award(BadgeType.Etna,              null, ElevationTip(3357));
-        if (totalElevationM >= 8848)  Award(BadgeType.EverestCumulative, null, ElevationTip(8848));
-        if (totalElevationM >= 17696) Award(BadgeType.EverestLevel2,     null, ElevationTip(17696));
-        if (totalElevationM >= 26544) Award(BadgeType.EverestLevel3,     null, ElevationTip(26544));
-        if (totalElevationM >= 35392) Award(BadgeType.EverestLevel4,     null, ElevationTip(35392));
-        if (totalElevationM >= 44240) Award(BadgeType.EverestLevel5,     null, ElevationTip(44240));
-        if (totalElevationM >= 53088) Award(BadgeType.EverestLevel6,     null, ElevationTip(53088));
-        if (totalElevationM >= 61936) Award(BadgeType.EverestLevel7,     null, ElevationTip(61936));
-        if (totalElevationM >= 70784) Award(BadgeType.EverestLevel8,     null, ElevationTip(70784));
-        if (totalElevationM >= 79632) Award(BadgeType.EverestLevel9,     null, ElevationTip(79632));
-        if (totalElevationM >= 88480) Award(BadgeType.EverestLevel10,    null, ElevationTip(88480));
+        if (totalElevationM >= 157)    Award(BadgeType.Cauberg,            null, ElevationTip(157));
+        if (totalElevationM >= 322)    Award(BadgeType.Vaalserberg,        null, ElevationTip(322));
+        if (totalElevationM >= 500)    Award(BadgeType.CumElev500,         null, ElevationTip(500));
+        if (totalElevationM >= 1000)   Award(BadgeType.CumElev1000,        null, ElevationTip(1000));
+        if (totalElevationM >= 1912)   Award(BadgeType.MontVentoux,        null, ElevationTip(1912));
+        if (totalElevationM >= 2962)   Award(BadgeType.Zugspitze,          null, ElevationTip(2962));
+        if (totalElevationM >= 3357)   Award(BadgeType.Etna,               null, ElevationTip(3357));
+        if (totalElevationM >= 4478)   Award(BadgeType.CumElevMatterhorn,  null, ElevationTip(4478));
+        if (totalElevationM >= 5000)   Award(BadgeType.CumElev5000,        null, ElevationTip(5000));
+        if (totalElevationM >= 5895)   Award(BadgeType.CumElevKilimanjaro, null, ElevationTip(5895));
+        if (totalElevationM >= 8611)   Award(BadgeType.CumElevK2,          null, ElevationTip(8611));
+        if (totalElevationM >= 8848)   Award(BadgeType.EverestCumulative,  null, ElevationTip(8848));
+        if (totalElevationM >= 17696)  Award(BadgeType.EverestLevel2,      null, ElevationTip(17696));
+        if (totalElevationM >= 25000)  Award(BadgeType.CumElev25000,       null, ElevationTip(25000));
+        if (totalElevationM >= 26544)  Award(BadgeType.EverestLevel3,      null, ElevationTip(26544));
+        if (totalElevationM >= 35392)  Award(BadgeType.EverestLevel4,      null, ElevationTip(35392));
+        if (totalElevationM >= 44240)  Award(BadgeType.EverestLevel5,      null, ElevationTip(44240));
+        if (totalElevationM >= 50000)  Award(BadgeType.CumElev50000,       null, ElevationTip(50000));
+        if (totalElevationM >= 53088)  Award(BadgeType.EverestLevel6,      null, ElevationTip(53088));
+        if (totalElevationM >= 61936)  Award(BadgeType.EverestLevel7,      null, ElevationTip(61936));
+        if (totalElevationM >= 70784)  Award(BadgeType.EverestLevel8,      null, ElevationTip(70784));
+        if (totalElevationM >= 79632)  Award(BadgeType.EverestLevel9,      null, ElevationTip(79632));
+        if (totalElevationM >= 88480)  Award(BadgeType.EverestLevel10,     null, ElevationTip(88480));
+        if (totalElevationM >= 100000) Award(BadgeType.CumElev100000,      null, ElevationTip(100000));
 
         // ---- Total running distance milestones ----
         if (totalRunDistanceM >= 100_000)   Award(BadgeType.Total100km,  null, RunDistanceTip(100_000));
@@ -256,18 +267,27 @@ public class BadgeService : IBadgeService
             return r is null ? (null, null) : (r.Id, r.StartDate);
         }
 
-        { var (id, dt) = FirstAtPace(5000,  7.0);  if (id.HasValue) Award(BadgeType.Sub75K,      id, dt); }
-        { var (id, dt) = FirstAtPace(5000,  6.0);  if (id.HasValue) Award(BadgeType.Sub65K,      id, dt); }
-        { var (id, dt) = FirstAtPace(5000,  5.0);  if (id.HasValue) Award(BadgeType.Sub55K,      id, dt); }
-        { var (id, dt) = FirstAtPace(5000,  4.5);  if (id.HasValue) Award(BadgeType.Sub4305K,    id, dt); }
-        { var (id, dt) = FirstAtPace(5000,  4.0);  if (id.HasValue) Award(BadgeType.Sub45K,      id, dt); }
-        { var (id, dt) = FirstAtPace(10000, 6.0);  if (id.HasValue) Award(BadgeType.Sub610K,     id, dt); }
-        { var (id, dt) = FirstAtPace(10000, 5.0);  if (id.HasValue) Award(BadgeType.Sub510K,     id, dt); }
-        { var (id, dt) = FirstAtPace(10000, 4.5);  if (id.HasValue) Award(BadgeType.Sub43010K,   id, dt); }
-        { var (id, dt) = FirstAtPace(21097, 6.0);  if (id.HasValue) Award(BadgeType.Sub6Half,    id, dt); }
-        { var (id, dt) = FirstAtPace(21097, 5.5);  if (id.HasValue) Award(BadgeType.Sub530Half,  id, dt); }
-        { var (id, dt) = FirstAtPace(21097, 5.0);  if (id.HasValue) Award(BadgeType.Sub5Half,    id, dt); }
-        { var (id, dt) = FirstAtPace(42195, 5.0);  if (id.HasValue) Award(BadgeType.Sub5Marathon,id, dt); }
+        { var (id, dt) = FirstAtPace(5000,  7.0);  if (id.HasValue) Award(BadgeType.Sub75K,         id, dt); }
+        { var (id, dt) = FirstAtPace(5000,  6.0);  if (id.HasValue) Award(BadgeType.Sub65K,         id, dt); }
+        { var (id, dt) = FirstAtPace(5000,  5.0);  if (id.HasValue) Award(BadgeType.Sub55K,         id, dt); }
+        { var (id, dt) = FirstAtPace(5000,  4.5);  if (id.HasValue) Award(BadgeType.Sub4305K,       id, dt); }
+        { var (id, dt) = FirstAtPace(5000,  4.0);  if (id.HasValue) Award(BadgeType.Sub45K,         id, dt); }
+        { var (id, dt) = FirstAtPace(10000, 6.0);  if (id.HasValue) Award(BadgeType.Sub610K,        id, dt); }
+        { var (id, dt) = FirstAtPace(10000, 5.0);  if (id.HasValue) Award(BadgeType.Sub510K,        id, dt); }
+        { var (id, dt) = FirstAtPace(10000, 4.5);  if (id.HasValue) Award(BadgeType.Sub43010K,      id, dt); }
+        { var (id, dt) = FirstAtPace(10000, 4.0);  if (id.HasValue) Award(BadgeType.Sub4Per10K,     id, dt); }
+        { var (id, dt) = FirstAtPace(21097, 6.0);  if (id.HasValue) Award(BadgeType.Sub6Half,       id, dt); }
+        { var (id, dt) = FirstAtPace(21097, 5.5);  if (id.HasValue) Award(BadgeType.Sub530Half,     id, dt); }
+        { var (id, dt) = FirstAtPace(21097, 5.0);  if (id.HasValue) Award(BadgeType.Sub5Half,       id, dt); }
+        { var (id, dt) = FirstAtPace(21097, 4.5);  if (id.HasValue) Award(BadgeType.Sub430Per21K,   id, dt); }
+        { var (id, dt) = FirstAtPace(21097, 4.0);  if (id.HasValue) Award(BadgeType.Sub4Per21K,     id, dt); }
+        { var (id, dt) = FirstAtPace(42195, 5.0);  if (id.HasValue) Award(BadgeType.Sub5Marathon,   id, dt); }
+        { var (id, dt) = FirstAtPace(42195, 4.5);  if (id.HasValue) Award(BadgeType.Sub430Marathon, id, dt); }
+        { var (id, dt) = FirstAtPace(42195, 4.0);  if (id.HasValue) Award(BadgeType.Sub4Marathon,   id, dt); }
+        { var (id, dt) = FirstAtPace(1000,  4.0);  if (id.HasValue) Award(BadgeType.Sub4Per1K,      id, dt); }
+        { var (id, dt) = FirstAtPace(1000,  3.5);  if (id.HasValue) Award(BadgeType.Sub330Per1K,    id, dt); }
+        { var (id, dt) = FirstAtPace(1000,  3.0);  if (id.HasValue) Award(BadgeType.Sub3Per1K,      id, dt); }
+        { var (id, dt) = FirstAtPace(400,   3.0);  if (id.HasValue) Award(BadgeType.Sub3Per400m,    id, dt); }
 
         // ---- Streak badges ----
         if (streak3Date.HasValue)   Award(BadgeType.Streak3,   null, streak3Date);
@@ -352,6 +372,7 @@ public class BadgeService : IBadgeService
             if (a.TotalElevationGain >= 2000) Award(BadgeType.AlpineMaster,   a.Id, a.StartDate);
             if (a.TotalElevationGain >= 3000) Award(BadgeType.HighPeaks,      a.Id, a.StartDate);
         }
+        // Note: ElevationSprint50 and ElevationSprint100 are handled in the first run loop above
 
         if (newBadges.Count > 0)
         {

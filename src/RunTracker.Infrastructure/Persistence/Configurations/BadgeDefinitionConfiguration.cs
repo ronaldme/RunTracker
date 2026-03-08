@@ -16,5 +16,6 @@ public class BadgeDefinitionConfiguration : IEntityTypeConfiguration<BadgeDefini
         builder.Property(b => b.Description).HasMaxLength(500).IsRequired();
         builder.Property(b => b.Icon).HasMaxLength(50).IsRequired();
         builder.Property(b => b.Category).HasMaxLength(100).IsRequired();
+        builder.Property(b => b.IsArchived).HasDefaultValue(false);
     }
 }

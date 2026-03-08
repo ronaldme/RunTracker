@@ -64,43 +64,236 @@ public class DatabaseSetupService
 
     private async Task SeedTestUsersAsync(AppDbContext db, UserManager<User> userManager)
     {
-        var testUsers = new[]
+        await SeedUser(db, userManager,
+            email: "alice@demo.com",
+            displayName: "Alice Demo",
+            bio: "Beginner runner based in Amsterdam. Started running last year and loving it!",
+            gender: Gender.Female,
+            birthYear: 1994, birthMonth: 6, birthDay: 12,
+            heightCm: 168,
+            weightKg: 62.5, goalWeightKg: 60.0,
+            maxHr: 192, restingHr: 62,
+            activityCount: 10,
+            badges:
+            [
+                BadgeType.FirstRun, BadgeType.FirstSteps_Unused,
+                BadgeType.First1K, BadgeType.First5K, BadgeType.First10K,
+                BadgeType.Total100km,
+                BadgeType.Runs10,
+                BadgeType.Sub75K, BadgeType.Sub65K,
+                BadgeType.Streak3,
+                BadgeType.ElevationSprint50,
+            ],
+            weightStart: 63.8, weightEnd: 62.5,
+            workouts:
+            [
+                (1, "Easy 5K", WorkoutType.Easy,      SportType.Run,  5000,  null,   360, null),
+                (3, "Recovery Run", WorkoutType.Recovery, SportType.Run, 4000, null,  420, null),
+                (5, "Tempo 3K",    WorkoutType.Tempo,    SportType.Run, 3000, null,   300, null),
+                (7, "Long Run",    WorkoutType.Long,      SportType.Run, 10000, null,  390, null),
+                (9, "Easy Run",    WorkoutType.Easy,      SportType.Run, 5000, null,   370, null),
+                (11, "Strength",   WorkoutType.Strength,  null,          null, 3600,  null, null),
+                (13, "5K Race",    WorkoutType.Race,      SportType.Run, 5000, null,   330, null),
+            ]);
+
+        await SeedUser(db, userManager,
+            email: "bob@demo.com",
+            displayName: "Bob Demo",
+            bio: "Marathon runner chasing a sub-3:30 finish. Training 5 days a week.",
+            gender: Gender.Male,
+            birthYear: 1988, birthMonth: 3, birthDay: 22,
+            heightCm: 182,
+            weightKg: 78.5, goalWeightKg: 75.0,
+            maxHr: 185, restingHr: 52,
+            activityCount: 40,
+            badges:
+            [
+                BadgeType.FirstRun, BadgeType.First1K, BadgeType.First5K, BadgeType.First10K,
+                BadgeType.First15K, BadgeType.First20K, BadgeType.First21K,
+                BadgeType.Total100km, BadgeType.Total250km, BadgeType.Total500km,
+                BadgeType.Runs10, BadgeType.Runs25, BadgeType.Runs50,
+                BadgeType.Sub75K, BadgeType.Sub65K, BadgeType.Sub55K, BadgeType.Sub4305K,
+                BadgeType.Sub610K, BadgeType.Sub510K, BadgeType.Sub43010K,
+                BadgeType.Sub6Half, BadgeType.Sub530Half,
+                BadgeType.ElevationSprint50, BadgeType.ElevationSprint100, BadgeType.HillStarter,
+                BadgeType.Cauberg, BadgeType.Vaalserberg, BadgeType.CumElev500, BadgeType.CumElev1000,
+                BadgeType.Streak3, BadgeType.Streak7,
+                BadgeType.Month50km, BadgeType.Month100km,
+                BadgeType.CalorieBurner500,
+                BadgeType.WeekendWarrior,
+            ],
+            weightStart: 80.2, weightEnd: 78.5,
+            workouts:
+            [
+                (1,  "Easy Recovery",    WorkoutType.Easy,      SportType.Run, 8000,  null,   390, null),
+                (2,  "Strength",         WorkoutType.Strength,  null,          null,  3600,  null, null),
+                (3,  "Tempo Run 8K",     WorkoutType.Tempo,     SportType.Run, 8000,  null,   295, null),
+                (5,  "Interval 5×1K",   WorkoutType.Intervals, SportType.Run, 5000,  null,   265, null),
+                (6,  "Easy Run",         WorkoutType.Easy,      SportType.Run, 10000, null,   380, null),
+                (7,  "Long Run 18K",     WorkoutType.Long,      SportType.Run, 18000, null,   360, null),
+                (8,  "Rest",             WorkoutType.Rest,      null,          null,  null,  null, null),
+                (9,  "Easy 6K",          WorkoutType.Easy,      SportType.Run, 6000,  null,   390, null),
+                (10, "Tempo 10K",        WorkoutType.Tempo,     SportType.Run, 10000, null,   295, null),
+                (12, "Interval 8×400m", WorkoutType.Intervals, SportType.Run, 3200,  null,   240, null),
+                (13, "Easy Run",         WorkoutType.Easy,      SportType.Run, 8000,  null,   380, null),
+                (14, "Long Run 22K",     WorkoutType.Long,      SportType.Run, 22000, null,   355, null),
+            ]);
+
+        await SeedUser(db, userManager,
+            email: "charlie@demo.com",
+            displayName: "Charlie Demo",
+            bio: "Ultra trail runner. Completed multiple 100K races. Mountains are my home.",
+            gender: Gender.Male,
+            birthYear: 1982, birthMonth: 11, birthDay: 5,
+            heightCm: 178,
+            weightKg: 72.0, goalWeightKg: 70.0,
+            maxHr: 178, restingHr: 44,
+            activityCount: 100,
+            badges:
+            [
+                BadgeType.FirstRun, BadgeType.First1K, BadgeType.First5K, BadgeType.First10K,
+                BadgeType.First15K, BadgeType.First20K, BadgeType.First21K, BadgeType.First25K,
+                BadgeType.First30K, BadgeType.First35K, BadgeType.First42K, BadgeType.First50K,
+                BadgeType.Total100km, BadgeType.Total250km, BadgeType.Total500km, BadgeType.Total750km,
+                BadgeType.Total1000km, BadgeType.Total2000km,
+                BadgeType.Runs10, BadgeType.Runs25, BadgeType.Runs50, BadgeType.Runs75, BadgeType.Runs100,
+                BadgeType.Sub75K, BadgeType.Sub65K, BadgeType.Sub55K, BadgeType.Sub4305K, BadgeType.Sub45K,
+                BadgeType.Sub610K, BadgeType.Sub510K, BadgeType.Sub43010K, BadgeType.Sub4Per10K,
+                BadgeType.Sub6Half, BadgeType.Sub530Half, BadgeType.Sub5Half, BadgeType.Sub430Per21K,
+                BadgeType.Sub5Marathon,
+                BadgeType.ElevationSprint50, BadgeType.ElevationSprint100,
+                BadgeType.HillStarter, BadgeType.HillClimber, BadgeType.MountainRunner,
+                BadgeType.Cauberg, BadgeType.Vaalserberg, BadgeType.CumElev500, BadgeType.CumElev1000,
+                BadgeType.MontVentoux, BadgeType.Zugspitze, BadgeType.Etna, BadgeType.CumElevMatterhorn,
+                BadgeType.CumElev5000, BadgeType.CumElevKilimanjaro, BadgeType.CumElevK2,
+                BadgeType.EverestCumulative,
+                BadgeType.Streak3, BadgeType.Streak7, BadgeType.Streak14, BadgeType.Streak30,
+                BadgeType.Month50km, BadgeType.Month100km, BadgeType.Month200km,
+                BadgeType.CalorieBurner500, BadgeType.Inferno, BadgeType.TotalCal10K,
+                BadgeType.WeekendWarrior, BadgeType.FiveDayWeek, BadgeType.LongRunner10,
+                BadgeType.Sub4Per1K, BadgeType.Sub330Per1K,
+            ],
+            weightStart: 73.5, weightEnd: 72.0,
+            workouts:
+            [
+                (1,  "Easy Trail 12K",    WorkoutType.Easy,      SportType.Run, 12000, null,  400, null),
+                (2,  "Strength & Core",   WorkoutType.Strength,  null,          null,  5400, null, null),
+                (3,  "Tempo 12K",         WorkoutType.Tempo,     SportType.Run, 12000, null,  285, null),
+                (4,  "Easy Run 8K",       WorkoutType.Easy,      SportType.Run, 8000,  null,  400, null),
+                (5,  "Interval 6×1K",    WorkoutType.Intervals, SportType.Run, 6000,  null,  250, null),
+                (6,  "Mountain Trail 25K",WorkoutType.Long,      SportType.Run, 25000, null,  380, null),
+                (7,  "Recovery 6K",       WorkoutType.Recovery,  SportType.Run, 6000,  null,  450, null),
+                (8,  "Easy Run 10K",      WorkoutType.Easy,      SportType.Run, 10000, null,  390, null),
+                (9,  "Tempo 15K",         WorkoutType.Tempo,     SportType.Run, 15000, null,  280, null),
+                (10, "Strength",          WorkoutType.Strength,  null,          null,  3600, null, null),
+                (11, "Interval 10×400m", WorkoutType.Intervals, SportType.Run, 4000,  null,  225, null),
+                (12, "Easy Trail 14K",    WorkoutType.Easy,      SportType.Run, 14000, null,  400, null),
+                (13, "Back-to-Back 20K",  WorkoutType.Long,      SportType.Run, 20000, null,  370, null),
+                (14, "Long Trail 32K",    WorkoutType.Long,      SportType.Run, 32000, null,  360, null),
+            ]);
+    }
+
+    private async Task SeedUser(
+        AppDbContext db,
+        UserManager<User> userManager,
+        string email,
+        string displayName,
+        string bio,
+        Gender gender,
+        int birthYear, int birthMonth, int birthDay,
+        int heightCm,
+        double weightKg, double goalWeightKg,
+        int maxHr, int restingHr,
+        int activityCount,
+        BadgeType[] badges,
+        double weightStart, double weightEnd,
+        (int DaysFromNow, string Title, WorkoutType Type, SportType? Sport, double? DistM, int? DurSec, int? PaceSec, int? HrZone)[] workouts)
+    {
+        var existing = await userManager.FindByEmailAsync(email);
+        if (existing is not null) return;
+
+        var user = new User
         {
-            new { Email = "alice@demo.com",   Name = "Alice Demo",   ActivityCount = 10  },
-            new { Email = "bob@demo.com",     Name = "Bob Demo",     ActivityCount = 40  },
-            new { Email = "charlie@demo.com", Name = "Charlie Demo", ActivityCount = 100 },
+            UserName        = email,
+            Email           = email,
+            DisplayName     = displayName,
+            Bio             = bio,
+            Gender          = gender,
+            BirthYear       = birthYear,
+            BirthMonth      = birthMonth,
+            BirthDay        = birthDay,
+            HeightCm        = heightCm,
+            WeightKg        = weightKg,
+            GoalWeightKg    = goalWeightKg,
+            MaxHeartRate    = maxHr,
+            RestingHeartRate= restingHr,
+            StravaHistoricalSyncComplete = true,
+            EmailConfirmed  = true,
+            ProfilePictureUrl = $"https://api.dicebear.com/9.x/initials/svg?seed={Uri.EscapeDataString(email)}",
         };
 
-        foreach (var def in testUsers)
+        var result = await userManager.CreateAsync(user, "demo");
+        if (!result.Succeeded)
         {
-            var existing = await userManager.FindByEmailAsync(def.Email);
-            if (existing is not null) continue;
-
-            var user = new User
-            {
-                UserName = def.Email,
-                Email = def.Email,
-                DisplayName = def.Name,
-                MaxHeartRate = 180,
-                StravaHistoricalSyncComplete = true,
-                EmailConfirmed = true,
-                ProfilePictureUrl = $"https://api.dicebear.com/9.x/initials/svg?seed={Uri.EscapeDataString(def.Email)}",
-            };
-
-            var result = await userManager.CreateAsync(user, "demo");
-            if (!result.Succeeded)
-            {
-                _logger.LogWarning("Failed to create test user {Email}: {Errors}", def.Email,
-                    string.Join(", ", result.Errors.Select(e => e.Description)));
-                continue;
-            }
-
-            var activities = TestActivityGenerator.Generate(user.Id, def.ActivityCount);
-            db.Activities.AddRange(activities);
-            await db.SaveChangesAsync();
-
-            _logger.LogInformation("Created test user {Email} with {Count} activities.", def.Email, def.ActivityCount);
+            _logger.LogWarning("Failed to create test user {Email}: {Errors}", email,
+                string.Join(", ", result.Errors.Select(e => e.Description)));
+            return;
         }
+
+        // Activities
+        var activities = TestActivityGenerator.Generate(user.Id, activityCount);
+        db.Activities.AddRange(activities);
+
+        // Badges — stagger dates over past 12 months, seeded per user
+        var rng   = new Random(email.Aggregate(0, (h, c) => h * 31 + c));
+        var today = DateTime.UtcNow.Date;
+        var badgeList = badges
+            .Select((bt, i) =>
+            {
+                var daysBack = (int)((double)(i + 1) / badges.Length * 365) + rng.Next(0, 10);
+                return new UserBadge
+                {
+                    UserId    = user.Id,
+                    BadgeType = bt,
+                    EarnedAt  = today.AddDays(-daysBack).AddHours(rng.Next(6, 21)),
+                };
+            })
+            .ToList();
+        db.UserBadges.AddRange(badgeList);
+
+        // Weight entries — weekly for 12 weeks, trending from weightStart → weightEnd
+        for (int w = 11; w >= 0; w--)
+        {
+            var fraction = (double)(11 - w) / 11.0;
+            var kg       = weightStart + (weightEnd - weightStart) * fraction + (rng.NextDouble() - 0.5) * 0.3;
+            db.WeightEntries.Add(new WeightEntry
+            {
+                UserId   = user.Id,
+                Date     = DateOnly.FromDateTime(today.AddDays(-w * 7)),
+                WeightKg = Math.Round(kg, 1),
+            });
+        }
+
+        // Scheduled workouts
+        foreach (var (daysFromNow, title, type, sport, distM, durSec, paceSec, hrZone) in workouts)
+        {
+            db.ScheduledWorkouts.Add(new ScheduledWorkout
+            {
+                UserId                  = user.Id,
+                Date                    = today.AddDays(daysFromNow).AddHours(7),
+                Title                   = title,
+                WorkoutType             = type,
+                SportType               = sport,
+                PlannedDistanceMeters   = distM,
+                PlannedDurationSeconds  = durSec,
+                PlannedPaceSecondsPerKm = paceSec,
+                PlannedHeartRateZone    = hrZone,
+            });
+        }
+
+        await db.SaveChangesAsync();
+        _logger.LogInformation("Created test user {Email} with {Count} activities, {B} badges, weight history and scheduled workouts.",
+            email, activityCount, badges.Length);
     }
 }
 
@@ -350,63 +543,74 @@ public static class BadgeSeedData
         B(BadgeType.First75K,           "First 75K",         "Completed your first 75 km ultra run",                            "🦅", "Distance Milestones", 90 ),
         B(BadgeType.FirstDoubleMarathon,"Double Marathon",   "Ran 84.39 km+ — twice the marathon distance in one go!",         "💪", "Distance Milestones", 100),
 
-        // Total Distance
+        // Total Distance — sequential sort order by ascending distance
         B(BadgeType.Total100km,         "Century",           "Accumulated 100 km of total running distance",                    "💯", "Total Distance",  1 ),
-        B(BadgeType.Total250km,         "250 km Club",       "Accumulated 250 km of total running distance",                    "🌱", "Total Distance",  15),
-        B(BadgeType.Total500km,         "500 km Club",       "Accumulated 500 km of total running distance",                    "⭐", "Total Distance",  2 ),
-        B(BadgeType.Total750km,         "750 km Club",       "Accumulated 750 km of total running distance",                    "🌿", "Total Distance",  25),
-        B(BadgeType.Total1000km,        "1000 km Club",      "Accumulated 1,000 km of total running distance",                  "🌟", "Total Distance",  3 ),
-        B(BadgeType.Total2000km,        "2000 km Club",      "Accumulated 2,000 km of total running distance",                  "🌍", "Total Distance",  45),
-        B(BadgeType.Total3000km,        "3000 km Club",      "Accumulated 3,000 km of total running distance",                  "🌎", "Total Distance",  55),
-        B(BadgeType.Total5000km,        "Ultra Runner",      "Accumulated 5,000 km of total running distance",                  "🚀", "Total Distance",  4 ),
-        B(BadgeType.Total10000km,       "10,000 km Club",    "Accumulated 10,000 km of total running distance",                 "🏆", "Total Distance",  65),
-        B(BadgeType.Total15000km,       "15,000 km Club",    "Accumulated 15,000 km — the distance around the globe!",         "🌏", "Total Distance",  75),
+        B(BadgeType.Total250km,         "250 km Club",       "Accumulated 250 km of total running distance",                    "🌱", "Total Distance",  2 ),
+        B(BadgeType.Total500km,         "500 km Club",       "Accumulated 500 km of total running distance",                    "⭐", "Total Distance",  3 ),
+        B(BadgeType.Total750km,         "750 km Club",       "Accumulated 750 km of total running distance",                    "🌿", "Total Distance",  4 ),
+        B(BadgeType.Total1000km,        "1000 km Club",      "Accumulated 1,000 km of total running distance",                  "🌟", "Total Distance",  5 ),
+        B(BadgeType.Total2000km,        "2000 km Club",      "Accumulated 2,000 km of total running distance",                  "🌍", "Total Distance",  6 ),
+        B(BadgeType.Total3000km,        "3000 km Club",      "Accumulated 3,000 km of total running distance",                  "🌎", "Total Distance",  7 ),
+        B(BadgeType.Total5000km,        "Ultra Runner",      "Accumulated 5,000 km of total running distance",                  "🚀", "Total Distance",  8 ),
+        B(BadgeType.Total10000km,       "10,000 km Club",    "Accumulated 10,000 km of total running distance",                 "🏆", "Total Distance",  9 ),
+        B(BadgeType.Total15000km,       "15,000 km Club",    "Accumulated 15,000 km — the distance around the globe!",         "🌏", "Total Distance",  10),
 
-        // Runs
+        // Runs — sequential sort order by ascending count
         B(BadgeType.FirstRun,           "First Steps",       "Logged your very first run",                                      "👟", "Runs", 1 ),
         B(BadgeType.Runs10,             "10 Runs",           "Completed 10 runs",                                               "🔟", "Runs", 2 ),
-        B(BadgeType.Runs25,             "25 Runs",           "Completed 25 runs",                                               "🏃", "Runs", 15),
-        B(BadgeType.Runs50,             "50 Runs",           "Completed 50 runs",                                               "🎯", "Runs", 3 ),
-        B(BadgeType.Runs75,             "75 Runs",           "Completed 75 runs",                                               "🏃", "Runs", 25),
-        B(BadgeType.Runs100,            "Century Runner",    "Completed 100 runs",                                              "💪", "Runs", 4 ),
-        B(BadgeType.Runs150,            "150 Runs",          "Completed 150 runs",                                              "🏅", "Runs", 35),
-        B(BadgeType.Runs200,            "200 Runs",          "Completed 200 runs",                                              "🏅", "Runs", 45),
-        B(BadgeType.Runs300,            "300 Runs",          "Completed 300 runs",                                              "🥇", "Runs", 50),
-        B(BadgeType.Runs365,            "Full Year",         "Completed 365 runs — one for every day of the year",              "📅", "Runs", 5 ),
-        B(BadgeType.Runs500,            "500 Runs",          "Completed 500 runs — half a thousand!",                           "⭐", "Runs", 55),
-        B(BadgeType.Runs750,            "750 Runs",          "Completed 750 runs",                                              "🌟", "Runs", 60),
-        B(BadgeType.Runs1000,           "1,000 Runs",        "Completed 1,000 runs",                                            "🏟️", "Runs", 6 ),
-        B(BadgeType.Runs1500,           "1,500 Runs",        "Completed 1,500 runs",                                            "🚀", "Runs", 70),
-        B(BadgeType.Runs2000,           "2,000 Runs",        "Completed 2,000 runs",                                            "💎", "Runs", 80),
-        B(BadgeType.Runs2500,           "2,500 Runs",        "Completed 2,500 runs — legendary!",                              "👑", "Runs", 90),
+        B(BadgeType.Runs25,             "25 Runs",           "Completed 25 runs",                                               "🏃", "Runs", 3 ),
+        B(BadgeType.Runs50,             "50 Runs",           "Completed 50 runs",                                               "🎯", "Runs", 4 ),
+        B(BadgeType.Runs75,             "75 Runs",           "Completed 75 runs",                                               "🏃", "Runs", 5 ),
+        B(BadgeType.Runs100,            "Century Runner",    "Completed 100 runs",                                              "💪", "Runs", 6 ),
+        B(BadgeType.Runs150,            "150 Runs",          "Completed 150 runs",                                              "🏅", "Runs", 7 ),
+        B(BadgeType.Runs200,            "200 Runs",          "Completed 200 runs",                                              "🏅", "Runs", 8 ),
+        B(BadgeType.Runs300,            "300 Runs",          "Completed 300 runs",                                              "🥇", "Runs", 9 ),
+        B(BadgeType.Runs365,            "Full Year",         "Completed 365 runs — one for every day of the year",              "📅", "Runs", 10),
+        B(BadgeType.Runs500,            "500 Runs",          "Completed 500 runs — half a thousand!",                           "⭐", "Runs", 11),
+        B(BadgeType.Runs750,            "750 Runs",          "Completed 750 runs",                                              "🌟", "Runs", 12),
+        B(BadgeType.Runs1000,           "1,000 Runs",        "Completed 1,000 runs",                                            "🏟️", "Runs", 13),
+        B(BadgeType.Runs1500,           "1,500 Runs",        "Completed 1,500 runs",                                            "🚀", "Runs", 14),
+        B(BadgeType.Runs2000,           "2,000 Runs",        "Completed 2,000 runs",                                            "💎", "Runs", 15),
+        B(BadgeType.Runs2500,           "2,500 Runs",        "Completed 2,500 runs — legendary!",                               "👑", "Runs", 16),
 
-        // Elevation (single run)
-        B(BadgeType.HillStarter,        "Hill Starter",      "Gained 200 m of elevation in a single run",                       "⛰️", "Elevation", 1),
-        B(BadgeType.HillClimber,        "Hill Climber",      "Gained 500 m of elevation in a single run",                       "🏕️", "Elevation", 2),
-        B(BadgeType.MountainRunner,     "Mountain Runner",   "Gained 1,000 m of elevation in a single run",                     "🏔️", "Elevation", 3),
-        B(BadgeType.AlpineMaster,       "Alpine Master",     "Gained 2,000 m of elevation in a single run",                     "🗻", "Elevation", 4),
-        B(BadgeType.HighPeaks,          "High Peaks",        "Gained 3,000 m of elevation in a single run",                     "🌨️", "Elevation", 5),
-        B(BadgeType.MontBlancRun,       "Mont Blanc",        "Climbed 4,808 m elevation gain in a single run",                  "⛰️", "Elevation", 6),
-        B(BadgeType.KilimanjaroRun,     "Kilimanjaro",       "Climbed 5,895 m elevation gain in a single run",                  "🌋", "Elevation", 7),
-        B(BadgeType.K2Run,              "K2",                "Climbed 8,611 m elevation gain in a single run",                  "🗻", "Elevation", 8),
-        B(BadgeType.EverestRun,         "Everest",           "Climbed 8,848 m elevation gain in a single run",                  "🏔️", "Elevation", 9),
+        // Elevation (single run) — sorted by ascending elevation threshold
+        B(BadgeType.ElevationSprint50,  "Hill Topper",       "Gained 50 m of elevation in a single run",                        "🌄", "Elevation", 1 ),
+        B(BadgeType.ElevationSprint100, "Hill Charger",      "Gained 100 m of elevation in a single run",                       "⛰️", "Elevation", 2 ),
+        B(BadgeType.HillStarter,        "Hill Starter",      "Gained 200 m of elevation in a single run",                       "🏕️", "Elevation", 3 ),
+        B(BadgeType.HillClimber,        "Hill Climber",      "Gained 500 m of elevation in a single run",                       "🧗", "Elevation", 4 ),
+        B(BadgeType.MountainRunner,     "Mountain Runner",   "Gained 1,000 m of elevation in a single run",                     "🏔️", "Elevation", 5 ),
+        B(BadgeType.AlpineMaster,       "Alpine Master",     "Gained 2,000 m of elevation in a single run",                     "🗻", "Elevation", 6 ),
+        B(BadgeType.HighPeaks,          "High Peaks",        "Gained 3,000 m of elevation in a single run",                     "🌨️", "Elevation", 7 ),
+        B(BadgeType.MontBlancRun,       "Mont Blanc",        "Climbed 4,808 m elevation gain in a single run",                  "🏔️", "Elevation", 8 ),
+        B(BadgeType.KilimanjaroRun,     "Kilimanjaro",       "Climbed 5,895 m elevation gain in a single run",                  "🌋", "Elevation", 9 ),
+        B(BadgeType.K2Run,              "K2",                "Climbed 8,611 m elevation gain in a single run",                  "🗺️", "Elevation", 10),
+        B(BadgeType.EverestRun,         "Everest",           "Climbed 8,848 m elevation gain in a single run",                  "🏔️", "Elevation", 11),
 
-        // Cumulative Elevation
+        // Cumulative Elevation — sorted by ascending threshold
         B(BadgeType.Cauberg,            "Cauberg",           "Accumulated 157 m total elevation gain across all runs",          "🚵", "Cumulative Elevation", 1 ),
         B(BadgeType.Vaalserberg,        "Vaalserberg",       "Accumulated 322 m total elevation gain across all runs",          "🏕️", "Cumulative Elevation", 2 ),
-        B(BadgeType.MontVentoux,        "Mont Ventoux",      "Accumulated 1,912 m total elevation gain across all runs",        "🌬️", "Cumulative Elevation", 3 ),
-        B(BadgeType.Zugspitze,          "Zugspitze",         "Accumulated 2,962 m total elevation gain across all runs",        "🏔️", "Cumulative Elevation", 4 ),
-        B(BadgeType.Etna,               "Etna",              "Accumulated 3,357 m total elevation gain across all runs",        "🌋", "Cumulative Elevation", 5 ),
-        B(BadgeType.EverestCumulative,  "Everest Climber",   "Accumulated 8,848 m total elevation gain across all runs",        "🧗", "Cumulative Elevation", 6 ),
-        B(BadgeType.EverestLevel2,      "Everest ×2",        "Accumulated 17,696 m total elevation gain across all runs",       "🧗", "Cumulative Elevation", 7 ),
-        B(BadgeType.EverestLevel3,      "Everest ×3",        "Accumulated 26,544 m total elevation gain across all runs",       "🧗", "Cumulative Elevation", 8 ),
-        B(BadgeType.EverestLevel4,      "Everest ×4",        "Accumulated 35,392 m total elevation gain across all runs",       "🧗", "Cumulative Elevation", 9 ),
-        B(BadgeType.EverestLevel5,      "Everest ×5",        "Accumulated 44,240 m total elevation gain across all runs",       "🧗", "Cumulative Elevation", 10),
-        B(BadgeType.EverestLevel6,      "Everest ×6",        "Accumulated 53,088 m total elevation gain across all runs",       "🧗", "Cumulative Elevation", 11),
-        B(BadgeType.EverestLevel7,      "Everest ×7",        "Accumulated 61,936 m total elevation gain across all runs",       "🧗", "Cumulative Elevation", 12),
-        B(BadgeType.EverestLevel8,      "Everest ×8",        "Accumulated 70,784 m total elevation gain across all runs",       "🧗", "Cumulative Elevation", 13),
-        B(BadgeType.EverestLevel9,      "Everest ×9",        "Accumulated 79,632 m total elevation gain across all runs",       "🧗", "Cumulative Elevation", 14),
-        B(BadgeType.EverestLevel10,     "Everest ×10",       "Accumulated 88,480 m total elevation gain across all runs",       "🧗", "Cumulative Elevation", 15),
+        B(BadgeType.CumElev500,         "500m Climber",      "Accumulated 500 m total elevation gain across all runs",          "⛰️", "Cumulative Elevation", 3 ),
+        B(BadgeType.CumElev1000,        "1km Climber",       "Accumulated 1,000 m total elevation gain across all runs",        "🏔️", "Cumulative Elevation", 4 ),
+        B(BadgeType.MontVentoux,        "Mont Ventoux",      "Accumulated 1,912 m total elevation gain across all runs",        "🌬️", "Cumulative Elevation", 5 ),
+        B(BadgeType.Zugspitze,          "Zugspitze",         "Accumulated 2,962 m total elevation gain across all runs",        "🏔️", "Cumulative Elevation", 6 ),
+        B(BadgeType.Etna,               "Etna",              "Accumulated 3,357 m total elevation gain across all runs",        "🌋", "Cumulative Elevation", 7 ),
+        B(BadgeType.CumElevMatterhorn,  "Matterhorn",        "Accumulated 4,478 m total elevation gain across all runs",        "🧗", "Cumulative Elevation", 8 ),
+        B(BadgeType.CumElev5000,        "5km Skyward",       "Accumulated 5,000 m total elevation gain across all runs",        "🔼", "Cumulative Elevation", 9 ),
+        B(BadgeType.CumElevKilimanjaro, "Kilimanjaro Climb", "Accumulated 5,895 m total elevation gain across all runs",        "🌄", "Cumulative Elevation", 10),
+        B(BadgeType.CumElevK2,          "K2 Climb",          "Accumulated 8,611 m total elevation gain across all runs",        "❄️", "Cumulative Elevation", 11),
+        B(BadgeType.EverestCumulative,  "Everest Climber",   "Accumulated 8,848 m total elevation gain across all runs",        "🧗", "Cumulative Elevation", 12),
+        B(BadgeType.EverestLevel2,      "Everest ×2",        "Accumulated 17,696 m total elevation gain across all runs",       "🧗", "Cumulative Elevation", 13),
+        B(BadgeType.CumElev25000,       "25km Skyward",      "Accumulated 25,000 m total elevation gain across all runs",       "🛸", "Cumulative Elevation", 14),
+        B(BadgeType.EverestLevel3,      "Everest ×3",        "Accumulated 26,544 m total elevation gain across all runs",       "🧗", "Cumulative Elevation", 15),
+        B(BadgeType.EverestLevel4,      "Everest ×4",        "Accumulated 35,392 m total elevation gain across all runs",       "🧗", "Cumulative Elevation", 16),
+        B(BadgeType.EverestLevel5,      "Everest ×5",        "Accumulated 44,240 m total elevation gain across all runs",       "🧗", "Cumulative Elevation", 17),
+        B(BadgeType.CumElev50000,       "50km Skyward",      "Accumulated 50,000 m total elevation gain across all runs",       "🌠", "Cumulative Elevation", 18),
+        B(BadgeType.EverestLevel6,      "Everest ×6",        "Accumulated 53,088 m total elevation gain across all runs",       "🧗", "Cumulative Elevation", 19),
+        B(BadgeType.EverestLevel7,      "Everest ×7",        "Accumulated 61,936 m total elevation gain across all runs",       "🧗", "Cumulative Elevation", 20),
+        B(BadgeType.EverestLevel8,      "Everest ×8",        "Accumulated 70,784 m total elevation gain across all runs",       "🧗", "Cumulative Elevation", 21),
+        B(BadgeType.EverestLevel9,      "Everest ×9",        "Accumulated 79,632 m total elevation gain across all runs",       "🧗", "Cumulative Elevation", 22),
+        B(BadgeType.EverestLevel10,     "Everest ×10",       "Accumulated 88,480 m total elevation gain across all runs",       "🧗", "Cumulative Elevation", 23),
+        B(BadgeType.CumElev100000,      "100km Skyward",     "Accumulated 100,000 m total elevation gain across all runs",      "🪐", "Cumulative Elevation", 24),
 
         // Exploration
         B(BadgeType.Tiles100,           "Explorer",          "Visited 100 map tiles",                                           "🗺️", "Exploration", 1),
@@ -434,19 +638,28 @@ public static class BadgeSeedData
         B(BadgeType.Walks10,            "10 Walks",          "Completed 10 walks or hikes",                                      "🥾", "Walking & Hiking", 2),
         B(BadgeType.WalkingTotal100km,  "100 km Walker",     "Accumulated 100 km of total walking and hiking distance",          "🌿", "Walking & Hiking", 3),
 
-        // Speed
+        // Speed — sorted by distance then pace (easiest to hardest)
         B(BadgeType.Sub75K,             "Sub-7 Pace",        "Ran 5 km+ at a pace under 7:00 /km",                              "🏃", "Speed", 1 ),
         B(BadgeType.Sub65K,             "Sub-6 Pace",        "Ran 5 km+ at a pace under 6:00 /km",                              "⚡", "Speed", 2 ),
         B(BadgeType.Sub55K,             "Sub-5 Pace",        "Ran 5 km+ at a pace under 5:00 /km",                              "🔥", "Speed", 3 ),
         B(BadgeType.Sub4305K,           "Sub-4:30 5K",       "Ran 5 km+ at a pace under 4:30 /km",                              "💨", "Speed", 4 ),
-        B(BadgeType.Sub45K,             "Sub-4 5K",          "Ran 5 km+ at a pace under 4:00 /km — elite territory!",           "🚀", "Speed", 5 ),
+        B(BadgeType.Sub45K,             "Sub-4 5K",          "Ran 5 km+ at a pace under 4:00 /km",                              "🚀", "Speed", 5 ),
         B(BadgeType.Sub610K,            "Sub-6 10K",         "Ran 10 km+ at a pace under 6:00 /km",                             "⚡", "Speed", 6 ),
         B(BadgeType.Sub510K,            "Sub-5 10K",         "Ran 10 km+ at a pace under 5:00 /km",                             "🔥", "Speed", 7 ),
         B(BadgeType.Sub43010K,          "Sub-4:30 10K",      "Ran 10 km+ at a pace under 4:30 /km",                             "💨", "Speed", 8 ),
-        B(BadgeType.Sub6Half,           "Sub-2:06 Half",     "Ran a half marathon+ at a pace under 6:00 /km",                   "⚡", "Speed", 9 ),
-        B(BadgeType.Sub530Half,         "Sub-1:56 Half",     "Ran a half marathon+ at a pace under 5:30 /km",                   "🔥", "Speed", 10),
-        B(BadgeType.Sub5Half,           "Sub-1:45 Half",     "Ran a half marathon+ at a pace under 5:00 /km",                   "💨", "Speed", 11),
-        B(BadgeType.Sub5Marathon,       "Sub-3:30 Marathon", "Ran a full marathon+ at a pace under 5:00 /km",                   "🚀", "Speed", 12),
+        B(BadgeType.Sub4Per10K,         "Sub-4 10K",         "Ran 10 km+ at a pace under 4:00 /km",                             "🚀", "Speed", 9 ),
+        B(BadgeType.Sub6Half,           "Sub-2:06 Half",     "Ran a half marathon+ at a pace under 6:00 /km",                   "⚡", "Speed", 10),
+        B(BadgeType.Sub530Half,         "Sub-1:56 Half",     "Ran a half marathon+ at a pace under 5:30 /km",                   "🔥", "Speed", 11),
+        B(BadgeType.Sub5Half,           "Sub-1:45 Half",     "Ran a half marathon+ at a pace under 5:00 /km",                   "💨", "Speed", 12),
+        B(BadgeType.Sub430Per21K,       "Sub-1:35 Half",     "Ran a half marathon+ at a pace under 4:30 /km",                   "🌟", "Speed", 13),
+        B(BadgeType.Sub4Per21K,         "Sub-1:24 Half",     "Ran a half marathon+ at a pace under 4:00 /km — elite!",          "👑", "Speed", 14),
+        B(BadgeType.Sub5Marathon,       "Sub-3:30 Marathon", "Ran a full marathon+ at a pace under 5:00 /km",                   "🚀", "Speed", 15),
+        B(BadgeType.Sub430Marathon,     "Sub-3:10 Marathon", "Ran a full marathon+ at a pace under 4:30 /km",                   "💎", "Speed", 16),
+        B(BadgeType.Sub4Marathon,       "Sub-2:49 Marathon", "Ran a full marathon+ at a pace under 4:00 /km — world class!",    "👑", "Speed", 17),
+        B(BadgeType.Sub4Per1K,          "Sub-4 1K",          "Ran 1 km+ at a pace under 4:00 /km",                              "⚡", "Speed", 18),
+        B(BadgeType.Sub330Per1K,        "Sub-3:30 1K",       "Ran 1 km+ at a pace under 3:30 /km",                              "🔥", "Speed", 19),
+        B(BadgeType.Sub3Per1K,          "Sub-3 1K",          "Ran 1 km+ at a pace under 3:00 /km",                              "💨", "Speed", 20),
+        B(BadgeType.Sub3Per400m,        "Sub-3 400m",        "Ran 400 m+ at a pace under 3:00 /km — sprinter!",                 "⚡", "Speed", 21),
 
         // Consistency / Streaks
         B(BadgeType.Streak3,            "3-Day Streak",      "Ran on 3 consecutive days",                                        "🔆", "Consistency", 1),

@@ -228,6 +228,41 @@ export function useAllBadges() {
   });
 }
 
+export function useAdminBadges() {
+  return useQuery({
+    queryKey: ['admin', 'badges'],
+    queryFn: () => badgesApi.adminGetAll().then((r) => r.data),
+  });
+}
+
+export function useArchiveBadge() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => badgesApi.adminArchive(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'badges'] }),
+  });
+}
+
+export function useUnarchiveBadge() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => badgesApi.adminUnarchive(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'badges'] }),
+  });
+}
+
+export function useUpdateBadgeSortOrder() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, sortOrder }: { id: number; sortOrder: number }) =>
+      badgesApi.adminUpdateSortOrder(id, sortOrder),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin', 'badges'] });
+      qc.invalidateQueries({ queryKey: ['badges', 'all'] });
+    },
+  });
+}
+
 // --- Tags Hooks ---
 
 export function useTags() {

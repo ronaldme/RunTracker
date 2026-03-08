@@ -16,4 +16,5 @@ public class BadgeDefinition
     public string Icon { get; set; } = null!;
     public string Category { get; set; } = null!;
     public int SortOrder { get; set; }
+    public bool IsArchived { get; set; } = false;
 }

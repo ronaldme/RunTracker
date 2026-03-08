@@ -163,4 +163,30 @@ public enum BadgeType
     Runs1500 = 142,
     Runs2000 = 143,
     Runs2500 = 144,
+
+    // Running: Short-distance & elite pace badges
+    Sub3Per400m = 200,       // < 3:00/km on a 400m+ run
+    Sub330Per1K = 201,       // < 3:30/km on a 1km+ run
+    Sub3Per1K = 202,         // < 3:00/km on a 1km+ run
+    Sub4Per1K = 203,         // < 4:00/km on a 1km+ run
+    Sub4Per10K = 204,        // < 4:00/km on a 10km+ run
+    Sub430Per21K = 205,      // < 4:30/km for a half marathon
+    Sub4Per21K = 206,        // < 4:00/km for a half marathon
+    Sub430Marathon = 207,    // < 4:30/km for a full marathon (sub 3:10)
+    Sub4Marathon = 208,      // < 4:00/km for a full marathon (sub 2:49)
+
+    // Elevation: Beginner single-run milestones
+    ElevationSprint50 = 210,   // >= 50m elevation gain in a single run
+    ElevationSprint100 = 211,  // >= 100m elevation gain in a single run
+
+    // Cumulative Elevation: Additional milestones
+    CumElev500 = 220,          // >= 500m cumulative elevation
+    CumElev1000 = 221,         // >= 1,000m cumulative elevation
+    CumElev5000 = 222,         // >= 5,000m cumulative elevation
+    CumElevMatterhorn = 223,   // >= 4,478m cumulative (Matterhorn)
+    CumElevKilimanjaro = 224,  // >= 5,895m cumulative (Kilimanjaro)
+    CumElevK2 = 225,           // >= 8,611m cumulative (K2)
+    CumElev25000 = 226,        // >= 25,000m cumulative
+    CumElev50000 = 227,        // >= 50,000m cumulative
+    CumElev100000 = 228,       // >= 100,000m cumulative
 }

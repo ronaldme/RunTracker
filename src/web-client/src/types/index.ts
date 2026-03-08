@@ -800,6 +800,17 @@ export interface BadgeWithStatus {
   sortOrder: number;
   isEarned: boolean;
   earnedAt: string | null;
+  isArchived: boolean;
+}
+
+export interface BadgeAdmin {
+  id: number;
+  name: string;
+  description: string;
+  icon: string;
+  category: string;
+  sortOrder: number;
+  isArchived: boolean;
 }
 
 // --- Absence Days ---
