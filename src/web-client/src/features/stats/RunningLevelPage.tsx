@@ -302,12 +302,6 @@ export default function RunningLevelPage() {
           <DistanceTable key={d.distance} dist={d} />
         ))}
       </div>
-
-      <p className="mt-6 text-xs text-gray-400 dark:text-gray-500">
-        Standards are approximate age-group benchmarks. Male 5K data from runninglevel.com; other distances scaled using Riegel's formula.
-        {profile.gender !== 1 && ' Female times adjusted ~12% slower than male standards.'}
-        {` Age used: ${age}.`}
-      </p>
     </div>
   );
 }

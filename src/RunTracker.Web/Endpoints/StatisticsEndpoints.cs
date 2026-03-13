@@ -97,11 +97,26 @@ public static class StatisticsEndpoints
             return Results.Ok(await mediator.Send(new GetRunningPercentileQuery(userId, isMale, age)));
         });
 
-        group.MapGet("/recent-predictions", async (ISender mediator, ClaimsPrincipal user, int? days, string? tagIds, bool? useWeighting) =>
+        group.MapGet("/recent-predictions", async (ISender mediator, ClaimsPrincipal user, UserManager<User> userManager, int? days, string? tagIds, bool? useWeighting) =>
         {
             var userId = user.FindFirstValue(ClaimTypes.NameIdentifier)!;
             var tags = ParseTagIds(tagIds);
-            return Results.Ok(await mediator.Send(new GetRecentPredictionsQuery(userId, days ?? 60, tags, useWeighting ?? false)));
+            int? age = null;
+            bool? isMale = null;
+            var appUser = await userManager.FindByIdAsync(userId);
+            if (appUser?.BirthYear.HasValue == true)
+            {
+                var today = DateTime.UtcNow;
+                age = today.Year - appUser.BirthYear.Value;
+                if (appUser.BirthMonth.HasValue && appUser.BirthDay.HasValue)
+                {
+                    var hadBirthday = today.Month > appUser.BirthMonth.Value ||
+                        (today.Month == appUser.BirthMonth.Value && today.Day >= appUser.BirthDay.Value);
+                    if (!hadBirthday) age--;
+                }
+                isMale = appUser.Gender == Gender.Male;
+            }
+            return Results.Ok(await mediator.Send(new GetRecentPredictionsQuery(userId, days ?? 60, tags, useWeighting ?? false, age, isMale)));
         });
 
         group.MapGet("/year-infographic", async (ISender mediator, ClaimsPrincipal user, UserManager<User> userManager, int? year) =>

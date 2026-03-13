@@ -456,7 +456,7 @@ public class GetActivityDaySummaryQueryHandler : IRequestHandler<GetActivityDayS
 }
 
 // --- GetRecentPredictions ---
-public record GetRecentPredictionsQuery(string UserId, int Days, List<Guid>? TagIds = null, bool UseTagWeighting = false) : IRequest<RecentPredictionsDto>;
+public record GetRecentPredictionsQuery(string UserId, int Days, List<Guid>? TagIds = null, bool UseTagWeighting = false, int? Age = null, bool? IsMale = null) : IRequest<RecentPredictionsDto>;
 
 public class GetRecentPredictionsQueryHandler : IRequestHandler<GetRecentPredictionsQuery, RecentPredictionsDto>
 {
@@ -482,6 +482,16 @@ public class GetRecentPredictionsQueryHandler : IRequestHandler<GetRecentPredict
     ];
 
     private static double Riegel(double t1, double d1, double d2) => t1 * Math.Pow(d2 / d1, 1.06);
+
+    private static double PredictTime(double sourceTimeSec, int sourceMeters, int targetMeters, int? age, bool? isMale)
+    {
+        if (age.HasValue && isMale.HasValue)
+        {
+            var score = RunningLevelStandards.GetLevelScore(isMale.Value, sourceMeters, age.Value, sourceTimeSec);
+            return RunningLevelStandards.PredictTime(isMale.Value, targetMeters, age.Value, score);
+        }
+        return Riegel(sourceTimeSec, sourceMeters, targetMeters);
+    }
 
     private static string FormatTime(double seconds)
     {
@@ -580,7 +590,7 @@ public class GetRecentPredictionsQueryHandler : IRequestHandler<GetRecentPredict
 
         var predictions = TargetDistances.Select(t =>
         {
-            var predicted = Riegel(bestPr.Value, bestSrc.Value.Meters, t.Meters);
+            var predicted = PredictTime(bestPr.Value, bestSrc.Value.Meters, t.Meters, request.Age, request.IsMale);
             return new RecentPredictedTimeDto(t.Label, t.Meters, predicted, FormatTime(predicted), FormatPace(predicted, t.Meters));
         }).ToList();
 
