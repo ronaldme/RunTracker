@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAllBadges } from '../../hooks/useQueries';
 import { badgesApi } from '../../api/client';
@@ -62,11 +63,22 @@ function BadgeModal({ badge, onClose }: { badge: BadgeWithStatus; onClose: () =>
           {badge.description}
         </p>
         {badge.isEarned ? (
-          <div className="flex items-center gap-2 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full px-4 py-1.5 text-sm font-semibold">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-            </svg>
-            Earned {badge.earnedAt ? formatDate(badge.earnedAt) : ''}
+          <div className="flex flex-col items-center gap-2">
+            <div className="flex items-center gap-2 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full px-4 py-1.5 text-sm font-semibold">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+              </svg>
+              Earned {badge.earnedAt ? formatDate(badge.earnedAt) : ''}
+            </div>
+            {badge.activityId && (
+              <Link
+                to={`/activities/${badge.activityId}`}
+                onClick={onClose}
+                className="text-xs text-primary-600 dark:text-primary-400 hover:underline"
+              >
+                View activity →
+              </Link>
+            )}
           </div>
         ) : (
           <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-full px-4 py-1.5 text-sm font-semibold">

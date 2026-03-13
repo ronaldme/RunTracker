@@ -807,6 +807,7 @@ export interface BadgeWithStatus {
   isEarned: boolean;
   earnedAt: string | null;
   isArchived: boolean;
+  activityId: string | null;
 }
 
 export interface BadgeAdmin {

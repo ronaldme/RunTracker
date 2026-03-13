@@ -21,7 +21,8 @@ public record BadgeWithStatusDto(
     int SortOrder,
     bool IsEarned,
     DateTime? EarnedAt,
-    bool IsArchived);
+    bool IsArchived,
+    Guid? ActivityId);
 
 public record BadgeAdminDto(
     int Id,
@@ -51,7 +52,7 @@ public class GetAllBadgesQueryHandler : IRequestHandler<GetAllBadgesQuery, List<
 
         var earned = await _db.UserBadges
             .Where(b => b.UserId == request.UserId)
-            .ToDictionaryAsync(b => b.BadgeType, b => (DateTime?)b.EarnedAt, ct);
+            .ToDictionaryAsync(b => b.BadgeType, b => (EarnedAt: (DateTime?)b.EarnedAt, b.ActivityId), ct);
 
         return definitions.Select(d => new BadgeWithStatusDto(
             d.Id,
@@ -61,8 +62,9 @@ public class GetAllBadgesQueryHandler : IRequestHandler<GetAllBadgesQuery, List<
             d.Category,
             d.SortOrder,
             earned.ContainsKey(d.BadgeType),
-            earned.TryGetValue(d.BadgeType, out var dt) ? dt : null,
-            d.IsArchived
+            earned.TryGetValue(d.BadgeType, out var e) ? e.EarnedAt : null,
+            d.IsArchived,
+            earned.TryGetValue(d.BadgeType, out var ea) ? ea.ActivityId : null
         )).ToList();
     }
 }
